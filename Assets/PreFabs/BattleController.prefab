@@ -45,4 +45,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   battleEntityPrefab: {fileID: 4064098010397200165, guid: ead8ce5cc0012b144945f8528483399d,
     type: 3}
+  battleText: {fileID: 0}
   battleEntities: []

@@ -20,9 +20,11 @@ public class BattleEntity : MonoBehaviour {
 		healthBar.SetMaxHealth(maxHealth);
 	}
 
-	public void TakeDamage(int damage) {
+	public bool TakeDamage(int damage) {
 		currentHealth -= damage;
 
 		healthBar.SetHealth(currentHealth);
+
+		return currentHealth <= 0;
 	}
 }

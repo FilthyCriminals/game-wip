@@ -2,17 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
+
+public enum BattleState {
+	START,
+	PLAYERTURN,
+	ENEMYTURN,
+	WAITING,
+	WON,
+	LOST
+}
 
 public class BattleController : MonoBehaviour {
 	[SerializeField] private Transform battleEntityPrefab;
+	public Text battleText;
 
 	public List<BattleEntity> battleEntities = new List<BattleEntity>();
 
 	private System.Random rand = new System.Random();
 
-	private bool isPlayerTurn = false;
 	private int turnOrderIndex = 0;
 	private int roundCounter = 0;
+	private BattleState battleState;
 	private BattleEntity player;
 	private BattleEntity enemy;
 
@@ -26,19 +37,10 @@ public class BattleController : MonoBehaviour {
 
 		// Randomize turn order
 		battleEntities = battleEntities.OrderBy(x => rand.Next()).ToList<BattleEntity>();
-	}
 
-	void Update() {
-		if (isPlayerTurn) return;
-
-		BattleEntity entity = battleEntities[turnOrderIndex];
-		turnOrderIndex = (++roundCounter) % battleEntities.Count;
-
-		if (entity.isPlayerTeam) {
-			isPlayerTurn = true;
-		} else {
-			EnemyAttack();
-		}
+		battleState = BattleState.START;
+		battleText.text = "Start!";
+		NextTurn();
 	}
 
 	private BattleEntity SpawnEntity(bool isPlayerTeam) {
@@ -64,7 +66,6 @@ public class BattleController : MonoBehaviour {
 	}
 
 	private void PopulateEnemyStats(BattleEntity enemy) {
-
 		enemy.maxHealth = rand.Next(90, 100);
 		enemy.currentHealth = enemy.maxHealth;
 
@@ -72,43 +73,127 @@ public class BattleController : MonoBehaviour {
 		enemy.maxAttackDamage = 2;
 	}
 
-	public void PlayerAttack() {
-		if (!isPlayerTurn) return;
 
+	private void NextTurn() {
+		if(battleState != BattleState.START)
+			turnOrderIndex = (++roundCounter) % battleEntities.Count;
+
+		BattleEntity entity = battleEntities[turnOrderIndex];
+
+		if (entity.isPlayerTeam) {
+			battleState = BattleState.PLAYERTURN;
+			PlayerTurn();
+		} else {
+			battleState = BattleState.ENEMYTURN;
+			EnemyTurn();
+		}
+	}
+
+	private void PlayerTurn() {
+		// Put setup logic for player turn here
+
+		battleText.text = "Choose your action.";
+	}
+
+	public void OnAttackButton() {
+		if (battleState != BattleState.PLAYERTURN) return;
+
+		StartCoroutine(PlayerAttack());
+	}
+
+	public void OnSkillButton() {
+		if (battleState != BattleState.PLAYERTURN) return;
+
+		StartCoroutine(PlayerSkill());
+	}
+
+	public IEnumerator PlayerAttack() {
 		int damage = rand.Next(player.minAttackDamage, player.maxAttackDamage + 1);
-		enemy.TakeDamage(damage);
+		bool isDead = enemy.TakeDamage(damage);
 
-		Debug.Log("Turn " + roundCounter + ": player did: " + damage + " damage with attack!");
+		battleText.text = "Turn " + roundCounter + " player did: " + damage + " damage with attack!";
+		battleState = BattleState.WAITING;
 
-		isPlayerTurn = false;
+		yield return new WaitForSeconds(1f);
+
+		if (isDead && !IsEnemyAlive()) {
+			battleState = BattleState.WON;
+			EndBattle();
+		} else {
+			NextTurn();
+		}
 	}
 
-	public void PlayerSkill() {
-		if (!isPlayerTurn) return;
-
+	public IEnumerator PlayerSkill() {
 		int damage = rand.Next(player.minSkillDamage, player.maxSkillDamage + 1);
-		enemy.TakeDamage(damage);
+		bool isDead = enemy.TakeDamage(damage);
 
-		Debug.Log("Turn " + roundCounter + ": player did: " + damage + " damage with skill!");
+		battleText.text = "Turn " + roundCounter + " player did: " + damage + " damage with skill!";
+		battleState = BattleState.WAITING;
 
-		isPlayerTurn = false;
+		yield return new WaitForSeconds(1f);
+
+		if (isDead && !IsEnemyAlive()) {
+			battleState = BattleState.WON;
+			EndBattle();
+		} else {
+			NextTurn();
+		}
 	}
 
-	private void EnemyAttack() {
-		if (isPlayerTurn) return;
+	private bool IsEnemyAlive() {
+		bool isEnemyAlive = false;
+
+		battleEntities.ForEach(entity => {
+			if (!entity.isPlayerTeam && entity.currentHealth > 0)
+				isEnemyAlive = true;
+		});
+
+		return isEnemyAlive;
+	}
+
+	private bool IsPlayerAlive() {
+		bool isPlayerAlive = false;
+
+		battleEntities.ForEach(entity => {
+			if (entity.isPlayerTeam && entity.currentHealth > 0)
+				isPlayerAlive = true;
+		});
+
+		return isPlayerAlive;
+	}
+
+	private void EnemyTurn() {
+		if (battleState != BattleState.ENEMYTURN) return;
+
+		StartCoroutine(EnemyAttack());
+	}
+
+	private IEnumerator EnemyAttack() {
+		yield return new WaitForSeconds(1f);
 
 		int damage = rand.Next(enemy.minAttackDamage, enemy.maxAttackDamage + 1);
-		player.TakeDamage(damage);
+		bool isDead = player.TakeDamage(damage);
 
-		Debug.Log("Turn " + roundCounter + ": enemy did: " + damage + " damage with attack!");
+		battleText.text = "Turn " + roundCounter + " enemy did: " + damage + " damage with attack!";
+		battleState = BattleState.WAITING;
+
+		yield return new WaitForSeconds(2f);
+
+		if (isDead && !IsPlayerAlive()) {
+			battleState = BattleState.LOST;
+			EndBattle();
+		} else {
+			NextTurn();
+		}
 	}
 
-	private void EnemySkill() {
-		if (isPlayerTurn) return;
+	private void EndBattle() {
 
-		int damage = rand.Next(enemy.minSkillDamage, enemy.maxSkillDamage + 1);
-		player.TakeDamage(damage);
-
-		Debug.Log("Turn " + roundCounter + ": enemy did: " + damage + " damage with skill!");
+		if(battleState == BattleState.WON) {
+			battleText.text = "You won!";
+		} else if (battleState == BattleState.LOST) {
+			battleText.text = "You lost...";
+		}
 	}
 }
