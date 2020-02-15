@@ -41,6 +41,7 @@ public class Utilities {
         return vec;
     }
 
+    // Functions for getting mouse z-axis positions
     public static Vector3 GetMouseWorldPositionWithZ() {
         return GetMouseWorldPositionWithZ(Input.mousePosition, Camera.main);
     }
