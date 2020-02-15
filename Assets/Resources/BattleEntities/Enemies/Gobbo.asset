@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b754e6c3032a92b45861d4cc7a72fe51, type: 3}
+  m_Name: Gobbo
+  m_EditorClassIdentifier: 
+  name: Gobbo
+  minHealth: 90
+  maxHealth: 100
+  isPlayerTeam: 0
+  minAttackDamage: 1
+  maxAttackDamage: 2
+  minSkillDamage: 1
+  maxSkillDamage: 2
+  sprite: {fileID: -8345638386909349096, guid: ed6ba2e9d1b6c9546b5d27b9e793ef4c, type: 3}
