@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class Testing : MonoBehaviour {
 
+    [SerializeField] private HeatMapVisual heatMapVisual;
     private Grid grid;
 
     private void Start() {
-        grid = new Grid(10, 10, 10f, new Vector3(0, 0));
+        grid = new Grid(40, 20, 5f, Vector3.zero);
+
+        heatMapVisual.SetGrid(grid);
     }
 
     private void Update() {
         if (Input.GetMouseButtonDown(0)) {
-            grid.SetValue(Utilities.GetMouseWorldPosition(), 1);
-        }
-
-        if (Input.GetMouseButtonDown(1)) {
-            grid.GetValue(Utilities.GetMouseWorldPosition());
+            Vector3 position = Utilities.GetMouseWorldPosition();
+            grid.AddValue(position, 100, 2, 7);
         }
     }
 }
