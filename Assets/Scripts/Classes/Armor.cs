@@ -16,4 +16,11 @@ public class Armor
     public string Description { get => Description; set => Description = value; }
     public string Name { get => Name; set => Name = value; }
     public string SpecialAbility { get => SpecialAbility; set => SpecialAbility = value; } //Could be anything: bonuses, damage type resistance, 
+
+
+
+    public Armor()
+    {
+
+    }
 }
