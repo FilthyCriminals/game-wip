@@ -8,8 +8,8 @@ public class Grid<TGridObject> {
     public const int HEAT_MAP_MAX_VALUE = 100;
     public const int HEAT_MAP_MIN_VALUE = 0;
 
-    public event EventHandler<OnGridValueChangedEventArgs> OnGridValueChanged;
-    public class OnGridValueChangedEventArgs : EventArgs {
+    public event EventHandler<OnGridObjectChangedEventArgs> OnGridObjectChanged;
+    public class OnGridObjectChangedEventArgs : EventArgs {
         public int x;
         public int y;
     }
@@ -35,7 +35,7 @@ public class Grid<TGridObject> {
         }
 
         // Used for drawing the debug grid and text values
-        bool showDebug = true;
+        bool showDebug = false;
         if (showDebug) {
             TextMesh[,] debugTextArray = new TextMesh[width, height];
 
@@ -49,7 +49,7 @@ public class Grid<TGridObject> {
             Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
             Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
 
-            OnGridValueChanged += (object sender, OnGridValueChangedEventArgs eventArgs) => {
+            OnGridObjectChanged += (object sender, OnGridObjectChangedEventArgs eventArgs) => {
                 debugTextArray[eventArgs.x, eventArgs.y].text = gridArray[eventArgs.x, eventArgs.y]?.ToString();
             };
         }
@@ -94,7 +94,7 @@ public class Grid<TGridObject> {
     public void SetGridObject(int x, int y, TGridObject value) {
         if (x >= 0 && y >= 0 && x < width && y < height) {
             gridArray[x, y] = value;
-            if (OnGridValueChanged != null) OnGridValueChanged(this, new OnGridValueChangedEventArgs { x = x, y = y });
+            if (OnGridObjectChanged != null) OnGridObjectChanged(this, new OnGridObjectChangedEventArgs { x = x, y = y });
         }
     }
 
@@ -105,37 +105,6 @@ public class Grid<TGridObject> {
     }
 
     public void TriggerGridObjectChanged(int x, int y) {
-        if (OnGridValueChanged != null) OnGridValueChanged(this, new OnGridValueChangedEventArgs { x = x, y = y });
+        if (OnGridObjectChanged != null) OnGridObjectChanged(this, new OnGridObjectChangedEventArgs { x = x, y = y });
     }
-
-    //public void AddValue(int x, int y, int value) {
-    //    SetValue(x, y, GetValue(x, y) + value);
-    //}
-
-    //public void AddValue(Vector3 worldPosition, int value, int fullValueRange, int totalRange) {
-    //    int lowerValueAmount = Mathf.RoundToInt((float)value / (totalRange - fullValueRange));
-
-    //    GetXY(worldPosition, out int originX, out int originY);
-    //    for (int x = 0; x < totalRange; x++) {
-    //        for (int y = 0; y < totalRange - x; y++) {
-    //            int radius = x + y;
-    //            int addValueAmount = value;
-    //            if (radius >= fullValueRange) {
-    //                addValueAmount -= lowerValueAmount * (radius - fullValueRange);
-    //            }
-
-    //            AddValue(originX + x, originY + y, addValueAmount);
-
-    //            if (x != 0) {
-    //                AddValue(originX - x, originY + y, addValueAmount);
-    //            }
-    //            if (y != 0) {
-    //                AddValue(originX + x, originY - y, addValueAmount);
-    //                if (x != 0) {
-    //                    AddValue(originX - x, originY - y, addValueAmount);
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
 }
