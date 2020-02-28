@@ -15,7 +15,10 @@ public enum BattleState {
 
 public class BattleController : MonoBehaviour {
 	[SerializeField] private Transform battleEntityPrefab;
+	[SerializeField] private GameObject turnOrderTrackerObject;
+
 	public Text battleText;
+	public Transform turnOrderTracker;
 
 	public List<BattleEntityController> battleEntities = new List<BattleEntityController>();
 
@@ -26,6 +29,7 @@ public class BattleController : MonoBehaviour {
 	private BattleState battleState;
 	private BattleEntityController player;
 	private BattleEntityController enemy;
+	private BattleEntityController currentEntity;
 
 	void Start() {
 		// Spawn player and enemy
@@ -59,16 +63,31 @@ public class BattleController : MonoBehaviour {
 		entityController = Instantiate(battleEntityPrefab, position, Quaternion.identity).GetComponent<BattleEntityController>();
 		entityController.battleEntity = entity;
 
+		SetupTurnOrderTrackerForEntity(entityController);
+
 		return entityController;
+	}
+
+	private void SetupTurnOrderTrackerForEntity(BattleEntityController battleEntity) {
+
+		TurnOrderTrackerObject trackerObject = Instantiate(turnOrderTrackerObject, turnOrderTracker).GetComponent<TurnOrderTrackerObject>();
+
+		trackerObject.Setup(battleEntity.battleEntity);
+
+		battleEntity.turnTracker = trackerObject;
 	}
 
 	private void NextTurn() {
 		if(battleState != BattleState.START)
 			turnOrderIndex = (++roundCounter) % battleEntities.Count;
 
-		BattleEntityController entity = battleEntities[turnOrderIndex];
+		if(currentEntity) currentEntity.turnTracker.SetActive(false);
 
-		if (entity.battleEntity.isPlayerTeam) {
+		currentEntity = battleEntities[turnOrderIndex];
+
+		currentEntity.turnTracker.SetActive(true);
+
+		if (currentEntity.battleEntity.isPlayerTeam) {
 			battleState = BattleState.PLAYERTURN;
 			PlayerTurn();
 		} else {

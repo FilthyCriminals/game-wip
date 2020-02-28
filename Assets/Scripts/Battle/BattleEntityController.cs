@@ -8,6 +8,7 @@ public class BattleEntityController : MonoBehaviour {
 	public BattleEntity battleEntity;
 	public HealthBar healthBar;
 	public SpriteRenderer spriteRenderer;
+	public TurnOrderTrackerObject turnTracker;
 
 	private System.Random rand = new System.Random();
 

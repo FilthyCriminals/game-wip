@@ -1,0 +1,21 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class TurnOrderTrackerObject : MonoBehaviour
+{
+	public Image characterSprite;
+	public Image background;
+	public Image activeBorder;
+
+	public void Setup(BattleEntity entity) {
+		characterSprite.sprite = entity.sprite;
+
+		background.color = entity.isPlayerTeam ? Color.green : Color.red;
+	}
+
+	public void SetActive(bool isActive) {
+		activeBorder.enabled = isActive;
+	}
+}
