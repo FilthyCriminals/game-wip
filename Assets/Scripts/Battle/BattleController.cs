@@ -216,6 +216,8 @@ public class BattleController : MonoBehaviour {
 
 	private void EndBattle() {
 
+		currentEntity.turnTracker.SetActive(false);
+
 		if(battleState == BattleState.WON) {
 			battleText.text = "You won!";
 		} else if (battleState == BattleState.LOST) {
