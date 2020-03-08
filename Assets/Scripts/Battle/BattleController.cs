@@ -15,7 +15,10 @@ public enum BattleState {
 
 public class BattleController : MonoBehaviour {
 	[SerializeField] private Transform battleEntityPrefab;
+	[SerializeField] private GameObject turnOrderTrackerObject;
+
 	public Text battleText;
+	public Transform turnOrderTracker;
 
 	public List<BattleEntityController> battleEntities = new List<BattleEntityController>();
 
@@ -26,6 +29,7 @@ public class BattleController : MonoBehaviour {
 	private BattleState battleState;
 	private BattleEntityController player;
 	private BattleEntityController enemy;
+	private BattleEntityController currentEntity;
 
 	void Start() {
 		// Spawn player and enemy
@@ -59,16 +63,31 @@ public class BattleController : MonoBehaviour {
 		entityController = Instantiate(battleEntityPrefab, position, Quaternion.identity).GetComponent<BattleEntityController>();
 		entityController.battleEntity = entity;
 
+		SetupTurnOrderTrackerForEntity(entityController);
+
 		return entityController;
+	}
+
+	private void SetupTurnOrderTrackerForEntity(BattleEntityController battleEntity) {
+
+		TurnOrderTrackerObject trackerObject = Instantiate(turnOrderTrackerObject, turnOrderTracker).GetComponent<TurnOrderTrackerObject>();
+
+		trackerObject.Setup(battleEntity.battleEntity);
+
+		battleEntity.turnTracker = trackerObject;
 	}
 
 	private void NextTurn() {
 		if(battleState != BattleState.START)
 			turnOrderIndex = (++roundCounter) % battleEntities.Count;
 
-		BattleEntityController entity = battleEntities[turnOrderIndex];
+		if(currentEntity) currentEntity.turnTracker.SetActive(false);
 
-		if (entity.battleEntity.isPlayerTeam) {
+		currentEntity = battleEntities[turnOrderIndex];
+
+		currentEntity.turnTracker.SetActive(true);
+
+		if (currentEntity.battleEntity.isPlayerTeam) {
 			battleState = BattleState.PLAYERTURN;
 			PlayerTurn();
 		} else {
@@ -80,7 +99,23 @@ public class BattleController : MonoBehaviour {
 	private void PlayerTurn() {
 		// Put setup logic for player turn here
 
-		battleText.text = "Choose your action.";
+		SetBattleText("Choose your action.");
+	}
+
+	private void SetBattleText(string text) {
+		StopCoroutine("TypeText");
+
+		battleText.text = "";
+
+		StartCoroutine(TypeText(text));
+	}
+
+	IEnumerator TypeText(string text) {
+		foreach (char character in text.ToCharArray()) {
+			battleText.text += character;
+			yield return null;
+			yield return null;
+		}
 	}
 
 	public void OnAttackButton() {
@@ -99,7 +134,8 @@ public class BattleController : MonoBehaviour {
 		int damage = rand.Next(player.battleEntity.minAttackDamage, player.battleEntity.maxAttackDamage + 1);
 		bool isDead = enemy.TakeDamage(damage);
 
-		battleText.text = "Turn " + roundCounter + " " + player.battleEntity.name + " did: " + damage + " damage with attack!";
+		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " did: " + damage + " damage with attack!");
+
 		battleState = BattleState.WAITING;
 
 		yield return new WaitForSeconds(1f);
@@ -116,7 +152,8 @@ public class BattleController : MonoBehaviour {
 		int damage = rand.Next(player.battleEntity.minSkillDamage, player.battleEntity.maxSkillDamage + 1);
 		bool isDead = enemy.TakeDamage(damage);
 
-		battleText.text = "Turn " + roundCounter + " " + player.battleEntity.name + " did: " + damage + " damage with skill!";
+		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " did: " + damage + " damage with skill!");
+
 		battleState = BattleState.WAITING;
 
 		yield return new WaitForSeconds(1f);
@@ -163,7 +200,8 @@ public class BattleController : MonoBehaviour {
 		int damage = rand.Next(enemy.battleEntity.minAttackDamage, enemy.battleEntity.maxAttackDamage + 1);
 		bool isDead = player.TakeDamage(damage);
 
-		battleText.text = "Turn " + roundCounter + " " + enemy.battleEntity.name + " did: " + damage + " damage with attack!";
+		SetBattleText("Turn " + roundCounter + " " + enemy.battleEntity.name + " did: " + damage + " damage with attack!");
+
 		battleState = BattleState.WAITING;
 
 		yield return new WaitForSeconds(2f);
@@ -177,6 +215,8 @@ public class BattleController : MonoBehaviour {
 	}
 
 	private void EndBattle() {
+
+		currentEntity.turnTracker.SetActive(false);
 
 		if(battleState == BattleState.WON) {
 			battleText.text = "You won!";

@@ -45,5 +45,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   battleEntityPrefab: {fileID: 4064098010397200165, guid: ead8ce5cc0012b144945f8528483399d,
     type: 3}
+  turnOrderTrackerObject: {fileID: 3033050670196034490, guid: 0efc197029d77d9408b93cb0d9d50ecd,
+    type: 3}
   battleText: {fileID: 0}
+  turnOrderTracker: {fileID: 0}
   battleEntities: []

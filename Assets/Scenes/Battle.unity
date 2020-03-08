@@ -121,6 +121,12 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!224 &180885021 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 529723588587210455, guid: dc7c24fdfa3920945ac4da977dec4aa8,
+    type: 3}
+  m_PrefabInstance: {fileID: 4069258603306723585}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &328857831
 GameObject:
   m_ObjectHideFlags: 0
@@ -490,6 +496,11 @@ PrefabInstance:
       propertyPath: battleText
       value: 
       objectReference: {fileID: 799452065}
+    - target: {fileID: 4439374084312720615, guid: 20481778300618d4fb9033831201dfe2,
+        type: 3}
+      propertyPath: turnOrderTracker
+      value: 
+      objectReference: {fileID: 180885021}
     - target: {fileID: 4439374084312720633, guid: 20481778300618d4fb9033831201dfe2,
         type: 3}
       propertyPath: m_Name
