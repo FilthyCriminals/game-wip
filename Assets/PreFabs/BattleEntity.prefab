@@ -147,15 +147,16 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -8345638386909349096, guid: ed6ba2e9d1b6c9546b5d27b9e793ef4c,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.203125, y: 0.2265625}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &3977422299986468050
@@ -194,7 +195,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0.126}
+  m_AnchoredPosition: {x: 0, y: 0.22}
   m_SizeDelta: {x: 206, y: 62.9999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &3330943857596491091
@@ -306,6 +307,7 @@ MonoBehaviour:
   battleEntity: {fileID: 0}
   healthBar: {fileID: 9118433668994838530}
   spriteRenderer: {fileID: 1588660701710547988}
+  turnTracker: {fileID: 0}
 --- !u!1 &5546901017283801454
 GameObject:
   m_ObjectHideFlags: 0
