@@ -30,6 +30,7 @@ public class BattleController : MonoBehaviour {
 	private BattleEntityController player;
 	private BattleEntityController enemy;
 	private BattleEntityController currentEntity;
+	private Coroutine typeText;
 
 	void Start() {
 		// Spawn player and enemy
@@ -88,7 +89,6 @@ public class BattleController : MonoBehaviour {
 		currentEntity.turnTracker.SetActive(true);
 
 		if (currentEntity.battleEntity.isPlayerTeam) {
-			battleState = BattleState.PLAYERTURN;
 			PlayerTurn();
 		} else {
 			battleState = BattleState.ENEMYTURN;
@@ -98,16 +98,21 @@ public class BattleController : MonoBehaviour {
 
 	private void PlayerTurn() {
 		// Put setup logic for player turn here
+		// Such as changing the skills available for this character
+		// Or for determining status effects
 
 		SetBattleText("Choose your action.");
+		battleState = BattleState.PLAYERTURN;
 	}
 
 	private void SetBattleText(string text) {
-		StopCoroutine("TypeText");
+		if (typeText != null) {
+			StopCoroutine(typeText);
+			typeText = null;
+		}
 
 		battleText.text = "";
-
-		StartCoroutine(TypeText(text));
+		typeText = StartCoroutine(TypeText(text));
 	}
 
 	IEnumerator TypeText(string text) {
@@ -120,23 +125,43 @@ public class BattleController : MonoBehaviour {
 
 	public void OnAttackButton() {
 		if (battleState != BattleState.PLAYERTURN) return;
+		battleState = BattleState.WAITING;
 
 		StartCoroutine(PlayerAttack());
 	}
 
 	public void OnSkillButton() {
 		if (battleState != BattleState.PLAYERTURN) return;
+		battleState = BattleState.WAITING;
 
-		StartCoroutine(PlayerSkill());
+		StartCoroutine(PlayerSkill(0));
+	}
+
+	public void OnSkillButton1() {
+		if (battleState != BattleState.PLAYERTURN) return;
+		battleState = BattleState.WAITING;
+
+		StartCoroutine(PlayerSkill(1));
+	}
+
+	public void OnSkillButton2() {
+		if (battleState != BattleState.PLAYERTURN) return;
+		battleState = BattleState.WAITING;
+
+		StartCoroutine(PlayerSkill(2));
+	}
+
+	public void OnSkillButton3() {
+		if (battleState != BattleState.PLAYERTURN) return;
+		battleState = BattleState.WAITING;
+
+		StartCoroutine(PlayerSkill(3));
 	}
 
 	public IEnumerator PlayerAttack() {
 		int damage = rand.Next(player.battleEntity.minAttackDamage, player.battleEntity.maxAttackDamage + 1);
 		bool isDead = enemy.TakeDamage(damage);
-
 		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " did: " + damage + " damage with attack!");
-
-		battleState = BattleState.WAITING;
 
 		yield return new WaitForSeconds(1f);
 
@@ -148,17 +173,24 @@ public class BattleController : MonoBehaviour {
 		}
 	}
 
-	public IEnumerator PlayerSkill() {
-		int damage = rand.Next(player.battleEntity.minSkillDamage, player.battleEntity.maxSkillDamage + 1);
-		bool isDead = enemy.TakeDamage(damage);
+	public IEnumerator PlayerSkill(int numSkill) {
 
-		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " did: " + damage + " damage with skill!");
+		//player.battleEntity.skills[numSkill].Cast(enemy);
 
-		battleState = BattleState.WAITING;
+		//int damage = rand.Next(player.battleEntity.minSkillDamage, player.battleEntity.maxSkillDamage + 1);
+		//bool isDead = enemy.TakeDamage(damage);
 
-		yield return new WaitForSeconds(1f);
+		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " cast: " + player.battleEntity.skills[0].name + "!");
 
-		if (isDead && !IsEnemyAlive()) {
+		int healthBefore = enemy.currentHealth;
+
+		yield return StartCoroutine(player.battleEntity.skills[numSkill].Cast(player, enemy));
+
+		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " did: " + (healthBefore - enemy.currentHealth) + " damage with " + player.battleEntity.skills[0].name + "!");
+
+		yield return new WaitForSeconds(0.5f);
+
+		if (!IsEnemyAlive()) {
 			battleState = BattleState.WON;
 			EndBattle();
 		} else {
@@ -190,6 +222,7 @@ public class BattleController : MonoBehaviour {
 
 	private void EnemyTurn() {
 		if (battleState != BattleState.ENEMYTURN) return;
+		battleState = BattleState.WAITING;
 
 		StartCoroutine(EnemyAttack());
 	}
@@ -201,8 +234,6 @@ public class BattleController : MonoBehaviour {
 		bool isDead = player.TakeDamage(damage);
 
 		SetBattleText("Turn " + roundCounter + " " + enemy.battleEntity.name + " did: " + damage + " damage with attack!");
-
-		battleState = BattleState.WAITING;
 
 		yield return new WaitForSeconds(2f);
 

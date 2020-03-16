@@ -21,3 +21,5 @@ MonoBehaviour:
   minSkillDamage: 5
   maxSkillDamage: 10
   sprite: {fileID: -6617858004004698657, guid: 930773210967aca4ebbf58cedc40a9e0, type: 3}
+  skills:
+  - {fileID: 11400000, guid: 38e11764deda4464280dc4311f48fe80, type: 2}

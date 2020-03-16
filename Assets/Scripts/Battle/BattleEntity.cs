@@ -18,4 +18,6 @@ public class BattleEntity : ScriptableObject {
 	public int maxSkillDamage = 10;
 
 	public Sprite sprite;
+
+	public List<Skill> skills;
 }

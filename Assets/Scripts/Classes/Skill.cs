@@ -1,20 +1,15 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+public abstract class Skill : ScriptableObject {
 
+	//[SerializeField] public new string name;
+	[SerializeField] protected int minPower;
+	[SerializeField] protected int maxPower;
+	[SerializeField] protected int cost;
+	[SerializeField] protected float speed;
 
-[System.Serializable]
-public class Skill
-{
-	public string Name;
-	public int Damage;
-	public int Cost; //Mana or Energy?
+	[SerializeField] protected GameObject VFXPrefab;
 
-
-    public Skill()
-    {
-
-    }
-
+	public abstract IEnumerator Cast(BattleEntityController caster, BattleEntityController target);
 }
