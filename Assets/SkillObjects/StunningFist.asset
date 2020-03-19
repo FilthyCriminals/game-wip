@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d487237893abfc64993512cb9ea7cd9f, type: 3}
   m_Name: StunningFist
   m_EditorClassIdentifier: 
-  minPower: 0
-  maxPower: 0
-  name: 
+  minPower: 10
+  maxPower: 15
+  name: Stunning Fist
   cost: 0
+  duration: 1

@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d2469bdf2a77d74b92f560974bc9d77, type: 3}
   m_Name: Firebolt
   m_EditorClassIdentifier: 
-  minPower: 0
-  maxPower: 0
-  name: 
+  minPower: 10
+  maxPower: 20
+  name: Firebolt
   cost: 0
-  speed: 0
-  VFXPrefab: {fileID: 0}
+  speed: 5
+  VFXPrefab: {fileID: 6250448831789072026, guid: 890a996cd0eb64c439f6d324d7fc6a67,
+    type: 3}

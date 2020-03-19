@@ -23,3 +23,4 @@ MonoBehaviour:
   sprite: {fileID: -6617858004004698657, guid: 930773210967aca4ebbf58cedc40a9e0, type: 3}
   skills:
   - {fileID: 11400000, guid: 38e11764deda4464280dc4311f48fe80, type: 2}
+  - {fileID: 11400000, guid: daffe847a674a374aabed299c0fac2f8, type: 2}
