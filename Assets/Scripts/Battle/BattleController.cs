@@ -78,6 +78,7 @@ public class BattleController : MonoBehaviour {
 		battleEntity.turnTracker = trackerObject;
 	}
 
+	// BattleState WAITING
 	private void NextTurn() {
 		if(battleState != BattleState.START)
 			turnOrderIndex = (++roundCounter) % battleEntities.Count;
@@ -88,12 +89,28 @@ public class BattleController : MonoBehaviour {
 
 		currentEntity.turnTracker.SetActive(true);
 
+		// Skip this turn
+		if (currentEntity.status == StatusEffect.STUN) {
+			currentEntity.statusDuration -= 1;
+
+			if (currentEntity.statusDuration == 0) currentEntity.status = StatusEffect.NONE;
+
+			StartCoroutine(NextTurnWithText(currentEntity.battleEntity.name + " is stunned!"));
+			return;
+		}
+
 		if (currentEntity.battleEntity.isPlayerTeam) {
 			PlayerTurn();
 		} else {
 			battleState = BattleState.ENEMYTURN;
 			EnemyTurn();
 		}
+	}
+
+	IEnumerator NextTurnWithText(string text) {
+		yield return SetBattleText(text);
+		yield return new WaitForSeconds(1.5f);
+		NextTurn();
 	}
 
 	private void PlayerTurn() {
@@ -105,7 +122,7 @@ public class BattleController : MonoBehaviour {
 		battleState = BattleState.PLAYERTURN;
 	}
 
-	private void SetBattleText(string text) {
+	private Coroutine SetBattleText(string text) {
 		if (typeText != null) {
 			StopCoroutine(typeText);
 			typeText = null;
@@ -113,6 +130,7 @@ public class BattleController : MonoBehaviour {
 
 		battleText.text = "";
 		typeText = StartCoroutine(TypeText(text));
+		return typeText;
 	}
 
 	IEnumerator TypeText(string text) {
@@ -175,20 +193,16 @@ public class BattleController : MonoBehaviour {
 
 	public IEnumerator PlayerSkill(int numSkill) {
 
-		//player.battleEntity.skills[numSkill].Cast(enemy);
-
-		//int damage = rand.Next(player.battleEntity.minSkillDamage, player.battleEntity.maxSkillDamage + 1);
-		//bool isDead = enemy.TakeDamage(damage);
-
-		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " cast: " + player.battleEntity.skills[0].name + "!");
+		Skill skill = player.battleEntity.skills[numSkill];
+		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " cast: " + skill.name + "!");
 
 		int healthBefore = enemy.currentHealth;
 
-		yield return StartCoroutine(player.battleEntity.skills[numSkill].Cast(player, enemy));
+		yield return StartCoroutine(skill.Cast(player, enemy));
 
-		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " did: " + (healthBefore - enemy.currentHealth) + " damage with " + player.battleEntity.skills[0].name + "!");
+		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " did: " + (healthBefore - enemy.currentHealth) + " damage with " + skill.name + "!");
 
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(1.5f);
 
 		if (!IsEnemyAlive()) {
 			battleState = BattleState.WON;

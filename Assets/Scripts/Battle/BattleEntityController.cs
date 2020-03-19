@@ -9,6 +9,8 @@ public class BattleEntityController : MonoBehaviour {
 	public HealthBar healthBar;
 	public SpriteRenderer spriteRenderer;
 	public TurnOrderTrackerObject turnTracker;
+	public StatusEffect status;
+	public int statusDuration = 0;
 
 	private System.Random rand = new System.Random();
 
@@ -27,5 +29,12 @@ public class BattleEntityController : MonoBehaviour {
 		healthBar.SetHealth(currentHealth);
 
 		return currentHealth <= 0;
+	}
+
+	public void SetStatusEffect(StatusEffect effect, int duration) {
+		// Place any status effect interations here
+
+		status = effect;
+		statusDuration = duration;
 	}
 }
