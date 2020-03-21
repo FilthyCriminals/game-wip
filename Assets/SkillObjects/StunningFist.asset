@@ -17,3 +17,6 @@ MonoBehaviour:
   name: Stunning Fist
   cost: 0
   duration: 1
+  statusEffect: 1
+  isSingleTarget: 0
+  isFriendly: 0

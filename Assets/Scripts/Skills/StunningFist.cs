@@ -3,7 +3,6 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "StunningFist", menuName = "Skill/StunningFist")]
 public class StunningFist : Skill {
-	[SerializeField] protected int duration;
 
 	private System.Random rand = new System.Random();
 
@@ -14,6 +13,6 @@ public class StunningFist : Skill {
 		int damage = rand.Next(this.minPower, this.maxPower + 1);
 
 		target.TakeDamage(damage);
-		target.SetStatusEffect(StatusEffect.STUN, duration);
+		target.SetStatusEffect(this.statusEffect, this.duration);
 	}
 }

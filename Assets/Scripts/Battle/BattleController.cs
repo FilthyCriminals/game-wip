@@ -6,8 +6,9 @@ using UnityEngine.UI;
 
 public enum BattleState {
 	START,
-	PLAYERTURN,
-	ENEMYTURN,
+	PLAYER_TURN,
+	TARGETING,
+	ENEMY_TURN,
 	WAITING,
 	WON,
 	LOST
@@ -26,19 +27,20 @@ public class BattleController : MonoBehaviour {
 
 	private int turnOrderIndex = 0;
 	private int roundCounter = 0;
-	private BattleState battleState;
+	public BattleState battleState;
 	private BattleEntityController player;
 	private BattleEntityController enemy;
+	private BattleEntityController target;
 	private BattleEntityController currentEntity;
 	private Coroutine typeText;
 
 	void Start() {
 		// Spawn player and enemy
-		player = SpawnEntity(true);
-		battleEntities.Add(player);
+		player = SpawnEntity(true, new Vector3(-3, 0));
 
-		enemy = SpawnEntity(false);
-		battleEntities.Add(enemy);
+		battleEntities.Add(player);
+		battleEntities.Add(SpawnEntity(false, new Vector3(3, 1)));
+		battleEntities.Add(SpawnEntity(false, new Vector3(3, -1)));
 
 		// Randomize turn order
 		battleEntities = battleEntities.OrderBy(x => rand.Next()).ToList<BattleEntityController>();
@@ -48,21 +50,20 @@ public class BattleController : MonoBehaviour {
 		NextTurn();
 	}
 
-	private BattleEntityController SpawnEntity(bool isPlayerTeam) {
-		Vector3 position;
+	private BattleEntityController SpawnEntity(bool isPlayerTeam, Vector3 position) {
 		BattleEntityController entityController;
 		BattleEntity entity;
 
 		if (isPlayerTeam) {
-			position = new Vector3(-3, 0);
 			entity = Resources.Load("BattleEntities/Players/Chris") as BattleEntity;
 		} else {
-			position = new Vector3(3, 0);
 			entity = Resources.Load("BattleEntities/Enemies/Gobbo") as BattleEntity;
 		}
 
 		entityController = Instantiate(battleEntityPrefab, position, Quaternion.identity).GetComponent<BattleEntityController>();
 		entityController.battleEntity = entity;
+		entityController.isPlayerTeam = isPlayerTeam;
+		entityController.battleController = this;
 
 		SetupTurnOrderTrackerForEntity(entityController);
 
@@ -73,7 +74,7 @@ public class BattleController : MonoBehaviour {
 
 		TurnOrderTrackerObject trackerObject = Instantiate(turnOrderTrackerObject, turnOrderTracker).GetComponent<TurnOrderTrackerObject>();
 
-		trackerObject.Setup(battleEntity.battleEntity);
+		trackerObject.Setup(battleEntity);
 
 		battleEntity.turnTracker = trackerObject;
 	}
@@ -99,10 +100,12 @@ public class BattleController : MonoBehaviour {
 			return;
 		}
 
-		if (currentEntity.battleEntity.isPlayerTeam) {
+		if (currentEntity.isPlayerTeam) {
+			player = currentEntity;
 			PlayerTurn();
 		} else {
-			battleState = BattleState.ENEMYTURN;
+			enemy = currentEntity;
+			battleState = BattleState.ENEMY_TURN;
 			EnemyTurn();
 		}
 	}
@@ -119,7 +122,7 @@ public class BattleController : MonoBehaviour {
 		// Or for determining status effects
 
 		SetBattleText("Choose your action.");
-		battleState = BattleState.PLAYERTURN;
+		battleState = BattleState.PLAYER_TURN;
 	}
 
 	private Coroutine SetBattleText(string text) {
@@ -142,44 +145,51 @@ public class BattleController : MonoBehaviour {
 	}
 
 	public void OnAttackButton() {
-		if (battleState != BattleState.PLAYERTURN) return;
+		if (battleState != BattleState.PLAYER_TURN) return;
 		battleState = BattleState.WAITING;
 
 		StartCoroutine(PlayerAttack());
 	}
 
 	public void OnSkillButton() {
-		if (battleState != BattleState.PLAYERTURN) return;
+		if (battleState != BattleState.PLAYER_TURN) return;
 		battleState = BattleState.WAITING;
 
 		StartCoroutine(PlayerSkill(0));
 	}
 
 	public void OnSkillButton1() {
-		if (battleState != BattleState.PLAYERTURN) return;
+		if (battleState != BattleState.PLAYER_TURN) return;
 		battleState = BattleState.WAITING;
 
 		StartCoroutine(PlayerSkill(1));
 	}
 
 	public void OnSkillButton2() {
-		if (battleState != BattleState.PLAYERTURN) return;
+		if (battleState != BattleState.PLAYER_TURN) return;
 		battleState = BattleState.WAITING;
 
 		StartCoroutine(PlayerSkill(2));
 	}
 
 	public void OnSkillButton3() {
-		if (battleState != BattleState.PLAYERTURN) return;
+		if (battleState != BattleState.PLAYER_TURN) return;
 		battleState = BattleState.WAITING;
 
 		StartCoroutine(PlayerSkill(3));
 	}
 
 	public IEnumerator PlayerAttack() {
+
+		// Enters BattleState for targeting
+		yield return StartCoroutine(Targeting());
+
 		int damage = rand.Next(player.battleEntity.minAttackDamage, player.battleEntity.maxAttackDamage + 1);
-		bool isDead = enemy.TakeDamage(damage);
-		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " did: " + damage + " damage with attack!");
+		bool isDead = target.TakeDamage(damage);
+
+		SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " took " + damage + " damage!");
+
+		target = null;
 
 		yield return new WaitForSeconds(1f);
 
@@ -194,13 +204,26 @@ public class BattleController : MonoBehaviour {
 	public IEnumerator PlayerSkill(int numSkill) {
 
 		Skill skill = player.battleEntity.skills[numSkill];
-		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " cast: " + skill.name + "!");
 
-		int healthBefore = enemy.currentHealth;
+		// Enters BattleState for targeting
+		yield return StartCoroutine(Targeting(skill));
 
-		yield return StartCoroutine(skill.Cast(player, enemy));
+		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " used " + skill.name + " on " + target.battleEntity.name + "!");
 
-		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " did: " + (healthBefore - enemy.currentHealth) + " damage with " + skill.name + "!");
+		int healthBefore = target.currentHealth;
+
+		yield return StartCoroutine(skill.Cast(player, target));
+
+		int healthDiff = healthBefore - target.currentHealth;
+
+		if(healthDiff == healthBefore)
+			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " was " + skill.statusEffect.ToString().ToLower() + "ed!");
+		else if(healthDiff < healthBefore)
+			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " took " + (healthBefore - target.currentHealth) + " damage from " + skill.name + "!");
+		else if(healthDiff > healthBefore)
+			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " healed for " + (target.currentHealth - healthBefore) + " health!");
+
+		target = null;
 
 		yield return new WaitForSeconds(1.5f);
 
@@ -212,13 +235,49 @@ public class BattleController : MonoBehaviour {
 		}
 	}
 
+	private IEnumerator Targeting(Skill skill) {
+		battleState = BattleState.TARGETING;
+		SetBattleText("Select a target");
+
+		TargetAll(skill.isFriendly);
+
+		while (target == null) yield return new WaitForSecondsRealtime(0.25f);
+
+	}
+
+	// Targeting for attack
+	private IEnumerator Targeting() {
+		battleState = BattleState.TARGETING;
+		SetBattleText("Select a target");
+
+		TargetAll(false);
+
+		while (target == null) yield return new WaitForSecondsRealtime(0.25f);
+
+	}
+
+	private void TargetAll(bool isPlayerTeam) {
+		foreach (BattleEntityController entity in battleEntities) {
+			if (entity.isPlayerTeam == isPlayerTeam)
+				entity.OnTargeting();
+		}
+	}
+
+	//private BattleEntityController GetFirstEntity(bool isPlayerTeam) {
+	//	foreach (BattleEntityController entity in battleEntities) {
+	//		if (entity.isPlayerTeam == isPlayerTeam)
+	//			return entity;
+	//	}
+	//	return null;
+	//}
+
 	private bool IsEnemyAlive() {
 		bool isEnemyAlive = false;
 
-		battleEntities.ForEach(entity => {
-			if (!entity.battleEntity.isPlayerTeam && entity.currentHealth > 0)
+		foreach (BattleEntityController entity in battleEntities) {
+			if (!entity.isPlayerTeam && entity.currentHealth > 0)
 				isEnemyAlive = true;
-		});
+		}
 
 		return isEnemyAlive;
 	}
@@ -227,7 +286,7 @@ public class BattleController : MonoBehaviour {
 		bool isPlayerAlive = false;
 
 		battleEntities.ForEach(entity => {
-			if (entity.battleEntity.isPlayerTeam && entity.currentHealth > 0)
+			if (entity.isPlayerTeam && entity.currentHealth > 0)
 				isPlayerAlive = true;
 		});
 
@@ -235,7 +294,7 @@ public class BattleController : MonoBehaviour {
 	}
 
 	private void EnemyTurn() {
-		if (battleState != BattleState.ENEMYTURN) return;
+		if (battleState != BattleState.ENEMY_TURN) return;
 		battleState = BattleState.WAITING;
 
 		StartCoroutine(EnemyAttack());
@@ -263,10 +322,22 @@ public class BattleController : MonoBehaviour {
 
 		currentEntity.turnTracker.SetActive(false);
 
-		if(battleState == BattleState.WON) {
+		if (battleState == BattleState.WON) {
 			battleText.text = "You won!";
 		} else if (battleState == BattleState.LOST) {
 			battleText.text = "You lost...";
+		}
+	}
+
+	public void OnEntitySelected(BattleEntityController entityController) {
+		target = entityController;
+
+		EndTargetingAll();
+	}
+
+	private void EndTargetingAll() {
+		foreach (BattleEntityController entity in battleEntities) {
+			entity.EndTargeting();
 		}
 	}
 }
