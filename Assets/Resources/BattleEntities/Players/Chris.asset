@@ -15,7 +15,6 @@ MonoBehaviour:
   name: Chris
   minHealth: 50
   maxHealth: 50
-  isPlayerTeam: 1
   minAttackDamage: 5
   maxAttackDamage: 10
   minSkillDamage: 5
@@ -24,3 +23,4 @@ MonoBehaviour:
   skills:
   - {fileID: 11400000, guid: 38e11764deda4464280dc4311f48fe80, type: 2}
   - {fileID: 11400000, guid: daffe847a674a374aabed299c0fac2f8, type: 2}
+  - {fileID: 11400000, guid: e69325cf3fef1544fb762fcb7402a151, type: 2}

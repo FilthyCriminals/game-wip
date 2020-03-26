@@ -10,7 +10,11 @@ public class Firebolt : Skill {
 
 	private System.Random rand = new System.Random();
 
-	public override IEnumerator Cast(BattleEntityController caster, BattleEntityController target) {
+	public override IEnumerator Cast(BattleEntityController caster, BattleEntityController[] targets) {
+
+		if (targets.Length != 1) yield break;
+
+		BattleEntityController target = targets[0];
 
 		VFXPrefab.transform.position = caster.transform.position;
 

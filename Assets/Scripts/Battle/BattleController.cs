@@ -39,8 +39,8 @@ public class BattleController : MonoBehaviour {
 		player = SpawnEntity(true, new Vector3(-3, 0));
 
 		battleEntities.Add(player);
-		battleEntities.Add(SpawnEntity(false, new Vector3(3, 1)));
-		battleEntities.Add(SpawnEntity(false, new Vector3(3, -1)));
+		battleEntities.Add(SpawnEntity(false, new Vector3(3, 1f)));
+		battleEntities.Add(SpawnEntity(false, new Vector3(3, -1.5f)));
 
 		// Randomize turn order
 		battleEntities = battleEntities.OrderBy(x => rand.Next()).ToList<BattleEntityController>();
@@ -212,7 +212,11 @@ public class BattleController : MonoBehaviour {
 
 		int healthBefore = target.currentHealth;
 
-		yield return StartCoroutine(skill.Cast(player, target));
+		if(skill.isSingleTarget)
+			yield return StartCoroutine(skill.Cast(player, new BattleEntityController[] { target }));
+		else {
+			yield return StartCoroutine(skill.Cast(player, battleEntities.Where(x => !x.isPlayerTeam).ToArray()));
+		}
 
 		int healthDiff = healthBefore - target.currentHealth;
 
