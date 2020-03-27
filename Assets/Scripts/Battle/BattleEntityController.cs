@@ -31,12 +31,19 @@ public class BattleEntityController : MonoBehaviour {
 		spriteRenderer.sprite = battleEntity.sprite;
 	}
 
-	public bool TakeDamage(int damage) {
+	public void TakeDamage(int damage) {
 		currentHealth -= damage;
+
+		if (currentHealth < 0) currentHealth = 0;
 
 		healthBar.SetHealth(currentHealth);
 
-		return currentHealth <= 0;
+
+		// Play hurt and death animation here
+		if (currentHealth == 0) {
+			battleController.battleEntities.Remove(this);
+			Destroy(this.gameObject);
+		}
 	}
 
 	private void OnMouseUp() {

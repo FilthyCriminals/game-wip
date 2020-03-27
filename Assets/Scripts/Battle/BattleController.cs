@@ -185,7 +185,7 @@ public class BattleController : MonoBehaviour {
 		yield return StartCoroutine(Targeting());
 
 		int damage = rand.Next(player.battleEntity.minAttackDamage, player.battleEntity.maxAttackDamage + 1);
-		bool isDead = target.TakeDamage(damage);
+		target.TakeDamage(damage);
 
 		SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " took " + damage + " damage!");
 
@@ -193,7 +193,7 @@ public class BattleController : MonoBehaviour {
 
 		yield return new WaitForSeconds(1f);
 
-		if (isDead && !IsEnemyAlive()) {
+		if (!IsEnemyAlive()) {
 			battleState = BattleState.WON;
 			EndBattle();
 		} else {
@@ -220,11 +220,11 @@ public class BattleController : MonoBehaviour {
 
 		int healthDiff = healthBefore - target.currentHealth;
 
-		if(healthDiff == healthBefore)
+		if(healthDiff == 0)
 			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " was " + skill.statusEffect.ToString().ToLower() + "ed!");
-		else if(healthDiff < healthBefore)
+		else if(healthDiff > 0)
 			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " took " + (healthBefore - target.currentHealth) + " damage from " + skill.name + "!");
-		else if(healthDiff > healthBefore)
+		else if(healthDiff < 0)
 			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " healed for " + (target.currentHealth - healthBefore) + " health!");
 
 		target = null;
@@ -308,13 +308,13 @@ public class BattleController : MonoBehaviour {
 		yield return new WaitForSeconds(1f);
 
 		int damage = rand.Next(enemy.battleEntity.minAttackDamage, enemy.battleEntity.maxAttackDamage + 1);
-		bool isDead = player.TakeDamage(damage);
+		player.TakeDamage(damage);
 
 		SetBattleText("Turn " + roundCounter + " " + enemy.battleEntity.name + " did: " + damage + " damage with attack!");
 
 		yield return new WaitForSeconds(2f);
 
-		if (isDead && !IsPlayerAlive()) {
+		if (!IsPlayerAlive()) {
 			battleState = BattleState.LOST;
 			EndBattle();
 		} else {
