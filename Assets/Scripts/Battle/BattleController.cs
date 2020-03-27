@@ -56,6 +56,10 @@ public class BattleController : MonoBehaviour {
 		// Randomize turn order
 		battleEntities = battleEntities.OrderBy(x => rand.Next()).ToList<BattleEntityController>();
 
+		foreach(BattleEntityController entityController in battleEntities) {
+			SetupTurnOrderTrackerForEntity(entityController);
+		}
+
 		battleState = BattleState.START;
 		battleText.text = "Start!";
 		NextTurn();
@@ -75,8 +79,6 @@ public class BattleController : MonoBehaviour {
 		entityController.battleEntity = entity;
 		entityController.isPlayerTeam = isPlayerTeam;
 		entityController.battleController = this;
-
-		SetupTurnOrderTrackerForEntity(entityController);
 
 		return entityController;
 	}
