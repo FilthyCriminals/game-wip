@@ -15,6 +15,7 @@ public class BattleEntityController : MonoBehaviour {
 
 	public StatusEffect status;
 	public int statusDuration = 0;
+	public int maxHealth;
 	public bool isPlayerTeam = false;
 	public bool isTargeting = false;
 
@@ -23,7 +24,9 @@ public class BattleEntityController : MonoBehaviour {
 	void Start() {
 		targetingImage.enabled = false;
 
-		int maxHealth = rand.Next(battleEntity.minHealth, battleEntity.maxHealth + 1);
+		maxHealth = rand.Next(battleEntity.minHealth, battleEntity.maxHealth + 1);
+
+		if (!isPlayerTeam) healthBar.gradient.colorKeys = new GradientColorKey[] { new GradientColorKey(Color.red, 0.0f), new GradientColorKey(Color.red, 1f) };
 
 		currentHealth = maxHealth;
 		healthBar.SetMaxHealth(maxHealth);
@@ -37,11 +40,13 @@ public class BattleEntityController : MonoBehaviour {
 		if (currentHealth < 0) currentHealth = 0;
 
 		healthBar.SetHealth(currentHealth);
+		turnTracker.background.transform.localScale = new Vector3(turnTracker.background.transform.localScale.x, currentHealth / (float)maxHealth );
 
 
 		// Play hurt and death animation here
 		if (currentHealth == 0) {
 			battleController.battleEntities.Remove(this);
+			Destroy(turnTracker.gameObject);
 			Destroy(this.gameObject);
 		}
 	}
