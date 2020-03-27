@@ -20,10 +20,15 @@ public class BattleController : MonoBehaviour {
 
 	public Text battleText;
 	public Transform turnOrderTracker;
+	public EnemyContainer enemyContainer;
 
 	public List<BattleEntityController> battleEntities = new List<BattleEntityController>();
 
 	private System.Random rand = new System.Random();
+
+	public int minNumEnemies = 1;
+	public int maxNumEnemies = 5;
+	public float entitySpacing = 2.5f;
 
 	private int turnOrderIndex = 0;
 	private int roundCounter = 0;
@@ -37,10 +42,16 @@ public class BattleController : MonoBehaviour {
 	void Start() {
 		// Spawn player and enemy
 		player = SpawnEntity(true, new Vector3(-3, 0));
-
 		battleEntities.Add(player);
-		battleEntities.Add(SpawnEntity(false, new Vector3(3, 1f)));
-		battleEntities.Add(SpawnEntity(false, new Vector3(3, -1.5f)));
+
+		int numEnemies = rand.Next(minNumEnemies, maxNumEnemies);
+
+		float startingPosition = (entitySpacing / 2) * (numEnemies - 1);
+		Debug.Log("Starting position: " + startingPosition);
+		for (int i = 0; i < numEnemies; i++) {
+			Debug.Log("Position: " + (startingPosition - i * entitySpacing));
+			battleEntities.Add(SpawnEntity(false, new Vector3(3, startingPosition - i* entitySpacing)));
+		}
 
 		// Randomize turn order
 		battleEntities = battleEntities.OrderBy(x => rand.Next()).ToList<BattleEntityController>();
@@ -55,9 +66,9 @@ public class BattleController : MonoBehaviour {
 		BattleEntity entity;
 
 		if (isPlayerTeam) {
-			entity = Resources.Load("BattleEntities/Players/Chris") as BattleEntity;
+			entity = Resources.Load("Chris") as BattleEntity;
 		} else {
-			entity = Resources.Load("BattleEntities/Enemies/Gobbo") as BattleEntity;
+			entity = enemyContainer.enemies[rand.Next(enemyContainer.enemies.Length)];
 		}
 
 		entityController = Instantiate(battleEntityPrefab, position, Quaternion.identity).GetComponent<BattleEntityController>();
