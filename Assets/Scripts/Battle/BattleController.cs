@@ -20,10 +20,15 @@ public class BattleController : MonoBehaviour {
 
 	public Text battleText;
 	public Transform turnOrderTracker;
+	public EnemyContainer enemyContainer;
 
 	public List<BattleEntityController> battleEntities = new List<BattleEntityController>();
 
 	private System.Random rand = new System.Random();
+
+	public int minNumEnemies = 1;
+	public int maxNumEnemies = 5;
+	public float entitySpacing = 2.5f;
 
 	private int turnOrderIndex = 0;
 	private int roundCounter = 0;
@@ -37,13 +42,23 @@ public class BattleController : MonoBehaviour {
 	void Start() {
 		// Spawn player and enemy
 		player = SpawnEntity(true, new Vector3(-3, 0));
-
 		battleEntities.Add(player);
-		battleEntities.Add(SpawnEntity(false, new Vector3(3, 1)));
-		battleEntities.Add(SpawnEntity(false, new Vector3(3, -1)));
+
+		int numEnemies = rand.Next(minNumEnemies, maxNumEnemies);
+
+		float startingPosition = (entitySpacing / 2) * (numEnemies - 1);
+		Debug.Log("Starting position: " + startingPosition);
+		for (int i = 0; i < numEnemies; i++) {
+			Debug.Log("Position: " + (startingPosition - i * entitySpacing));
+			battleEntities.Add(SpawnEntity(false, new Vector3(3, startingPosition - i* entitySpacing)));
+		}
 
 		// Randomize turn order
 		battleEntities = battleEntities.OrderBy(x => rand.Next()).ToList<BattleEntityController>();
+
+		foreach(BattleEntityController entityController in battleEntities) {
+			SetupTurnOrderTrackerForEntity(entityController);
+		}
 
 		battleState = BattleState.START;
 		battleText.text = "Start!";
@@ -55,17 +70,15 @@ public class BattleController : MonoBehaviour {
 		BattleEntity entity;
 
 		if (isPlayerTeam) {
-			entity = Resources.Load("BattleEntities/Players/Chris") as BattleEntity;
+			entity = Resources.Load("Chris") as BattleEntity;
 		} else {
-			entity = Resources.Load("BattleEntities/Enemies/Gobbo") as BattleEntity;
+			entity = enemyContainer.enemies[rand.Next(enemyContainer.enemies.Length)];
 		}
 
 		entityController = Instantiate(battleEntityPrefab, position, Quaternion.identity).GetComponent<BattleEntityController>();
 		entityController.battleEntity = entity;
 		entityController.isPlayerTeam = isPlayerTeam;
 		entityController.battleController = this;
-
-		SetupTurnOrderTrackerForEntity(entityController);
 
 		return entityController;
 	}
@@ -185,7 +198,7 @@ public class BattleController : MonoBehaviour {
 		yield return StartCoroutine(Targeting());
 
 		int damage = rand.Next(player.battleEntity.minAttackDamage, player.battleEntity.maxAttackDamage + 1);
-		bool isDead = target.TakeDamage(damage);
+		target.TakeDamage(damage);
 
 		SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " took " + damage + " damage!");
 
@@ -193,7 +206,7 @@ public class BattleController : MonoBehaviour {
 
 		yield return new WaitForSeconds(1f);
 
-		if (isDead && !IsEnemyAlive()) {
+		if (!IsEnemyAlive()) {
 			battleState = BattleState.WON;
 			EndBattle();
 		} else {
@@ -212,15 +225,19 @@ public class BattleController : MonoBehaviour {
 
 		int healthBefore = target.currentHealth;
 
-		yield return StartCoroutine(skill.Cast(player, target));
+		if(skill.isSingleTarget)
+			yield return StartCoroutine(skill.Cast(player, new BattleEntityController[] { target }));
+		else {
+			yield return StartCoroutine(skill.Cast(player, battleEntities.Where(x => !x.isPlayerTeam).ToArray()));
+		}
 
 		int healthDiff = healthBefore - target.currentHealth;
 
-		if(healthDiff == healthBefore)
+		if(healthDiff == 0)
 			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " was " + skill.statusEffect.ToString().ToLower() + "ed!");
-		else if(healthDiff < healthBefore)
+		else if(healthDiff > 0)
 			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " took " + (healthBefore - target.currentHealth) + " damage from " + skill.name + "!");
-		else if(healthDiff > healthBefore)
+		else if(healthDiff < 0)
 			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " healed for " + (target.currentHealth - healthBefore) + " health!");
 
 		target = null;
@@ -304,13 +321,13 @@ public class BattleController : MonoBehaviour {
 		yield return new WaitForSeconds(1f);
 
 		int damage = rand.Next(enemy.battleEntity.minAttackDamage, enemy.battleEntity.maxAttackDamage + 1);
-		bool isDead = player.TakeDamage(damage);
+		player.TakeDamage(damage);
 
 		SetBattleText("Turn " + roundCounter + " " + enemy.battleEntity.name + " did: " + damage + " damage with attack!");
 
 		yield return new WaitForSeconds(2f);
 
-		if (isDead && !IsPlayerAlive()) {
+		if (!IsPlayerAlive()) {
 			battleState = BattleState.LOST;
 			EndBattle();
 		} else {

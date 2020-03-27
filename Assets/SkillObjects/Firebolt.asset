@@ -16,6 +16,10 @@ MonoBehaviour:
   maxPower: 20
   name: Firebolt
   cost: 0
+  duration: 0
+  statusEffect: 0
+  isSingleTarget: 1
+  isFriendly: 0
   speed: 5
   VFXPrefab: {fileID: 6250448831789072026, guid: 890a996cd0eb64c439f6d324d7fc6a67,
     type: 3}

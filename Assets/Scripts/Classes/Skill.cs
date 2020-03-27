@@ -3,7 +3,6 @@ using UnityEngine;
 
 public abstract class Skill : ScriptableObject {
 
-	//[SerializeField] public new string name;
 	[SerializeField] protected int minPower;
 	[SerializeField] protected int maxPower;
 	[SerializeField] public new string name;
@@ -13,7 +12,7 @@ public abstract class Skill : ScriptableObject {
 	[SerializeField] public bool isSingleTarget;
 	[SerializeField] public bool isFriendly;
 
-	public abstract IEnumerator Cast(BattleEntityController caster, BattleEntityController target);
+	public abstract IEnumerator Cast(BattleEntityController caster, BattleEntityController[] targets);
 }
 
 public enum StatusEffect {

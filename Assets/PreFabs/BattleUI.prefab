@@ -234,7 +234,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Unused
+  m_Text: Fireball
 --- !u!1 &2394033462214284275
 GameObject:
   m_ObjectHideFlags: 0
