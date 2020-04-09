@@ -23,6 +23,8 @@ public class BattleController : MonoBehaviour {
 	public EnemyContainer enemyContainer;
 
 	public List<BattleEntityController> battleEntities = new List<BattleEntityController>();
+	public List<BattleEntityController> players = new List<BattleEntityController>();
+	public List<BattleEntityController> enemies = new List<BattleEntityController>();
 
 	private System.Random rand = new System.Random();
 
@@ -40,18 +42,12 @@ public class BattleController : MonoBehaviour {
 	private Coroutine typeText;
 
 	void Start() {
+
+		enemyContainer = GetComponent<EnemyContainer>();
+
 		// Spawn player and enemy
-		player = SpawnEntity(true, new Vector3(-3, 0));
-		battleEntities.Add(player);
-
-		int numEnemies = rand.Next(minNumEnemies, maxNumEnemies);
-
-		float startingPosition = (entitySpacing / 2) * (numEnemies - 1);
-		Debug.Log("Starting position: " + startingPosition);
-		for (int i = 0; i < numEnemies; i++) {
-			Debug.Log("Position: " + (startingPosition - i * entitySpacing));
-			battleEntities.Add(SpawnEntity(false, new Vector3(3, startingPosition - i* entitySpacing)));
-		}
+		SpawnPlayers();
+		SpawnEnemies();
 
 		// Randomize turn order
 		battleEntities = battleEntities.OrderBy(x => rand.Next()).ToList<BattleEntityController>();
@@ -65,15 +61,44 @@ public class BattleController : MonoBehaviour {
 		NextTurn();
 	}
 
-	private BattleEntityController SpawnEntity(bool isPlayerTeam, Vector3 position) {
-		BattleEntityController entityController;
+	private void SpawnPlayers() {
+		int numPlayers = 0;
+
+		foreach (BattleEntity _entity in CharacterManager.instance.battleEntities) {
+			if (_entity != null) numPlayers++;
+		}
+
 		BattleEntity entity;
 
-		if (isPlayerTeam) {
-			entity = Resources.Load("Chris") as BattleEntity;
-		} else {
-			entity = enemyContainer.enemies[rand.Next(enemyContainer.enemies.Length)];
+		float startingPosition = (entitySpacing / 2) * (numPlayers - 1);
+		for (int i = 0; i < numPlayers; i++) {
+			entity = CharacterManager.instance.battleEntities[i];
+
+			Debug.Log(entity);
+			if (entity != null) {
+				BattleEntityController tmp = SpawnEntity(entity, new Vector3(-3, startingPosition - i * entitySpacing), true);
+				battleEntities.Add(tmp);
+				players.Add(tmp);
+			}
 		}
+	}
+
+	private void SpawnEnemies() {
+		int numEnemies = rand.Next(minNumEnemies, maxNumEnemies);
+		BattleEntity entity;
+
+		float startingPosition = (entitySpacing / 2) * (numEnemies - 1);
+		for (int i = 0; i < numEnemies; i++) {
+			entity = enemyContainer.enemies[rand.Next(enemyContainer.enemies.Length)];
+
+			BattleEntityController tmp = SpawnEntity(entity, new Vector3(3, startingPosition - i * entitySpacing), false);
+			battleEntities.Add(tmp);
+			enemies.Add(tmp);
+		}
+	}
+
+	private BattleEntityController SpawnEntity(BattleEntity entity, Vector3 position, bool isPlayerTeam) {
+		BattleEntityController entityController;
 
 		entityController = Instantiate(battleEntityPrefab, position, Quaternion.identity).GetComponent<BattleEntityController>();
 		entityController.battleEntity = entity;
@@ -319,6 +344,8 @@ public class BattleController : MonoBehaviour {
 
 	private IEnumerator EnemyAttack() {
 		yield return new WaitForSeconds(1f);
+
+		BattleEntityController player = players[rand.Next(players.Count + 1)];
 
 		int damage = rand.Next(enemy.battleEntity.minAttackDamage, enemy.battleEntity.maxAttackDamage + 1);
 		player.TakeDamage(damage);

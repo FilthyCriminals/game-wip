@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4439374084312720614}
   - component: {fileID: 4439374084312720615}
+  - component: {fileID: 6951944313390756792}
   m_Layer: 0
   m_Name: BattleController
   m_TagString: Untagged
@@ -49,4 +50,22 @@ MonoBehaviour:
     type: 3}
   battleText: {fileID: 0}
   turnOrderTracker: {fileID: 0}
+  enemyContainer: {fileID: 0}
   battleEntities: []
+  minNumEnemies: 1
+  maxNumEnemies: 5
+  entitySpacing: 2.5
+  battleState: 0
+--- !u!114 &6951944313390756792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4439374084312720633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70a1291dc61b9754d88cb0576974d4d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemies: []
