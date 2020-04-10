@@ -8,12 +8,13 @@ public class BattleUI : MonoBehaviour
 
 	public TurnOrderTrackerObject turnOrderTrackerObject;
 
+	public GameObject cancelTargetingButton;
 	public GameObject attackButton;
 	public GameObject[] skillButtons;
 	public Text[] skillTexts;
 
 	private void Start() {
-		ClearUI();
+		ClearUI(false);
 	}
 
 	public void SetupTurnOrderTrackerForEntity(BattleEntityController battleEntity) {
@@ -27,6 +28,7 @@ public class BattleUI : MonoBehaviour
 
 	public void SetupUIForPlayer(BattleEntityController player) {
 
+		cancelTargetingButton.SetActive(false);
 		attackButton.SetActive(true);
 
 		foreach (GameObject button in skillButtons) {
@@ -39,12 +41,17 @@ public class BattleUI : MonoBehaviour
 		}
 	}
 
-	public void ClearUI() {
+	public void ClearUI(bool showCancel) {
 
+		cancelTargetingButton.SetActive(showCancel);
 		attackButton.SetActive(false);
 
 		foreach (GameObject button in skillButtons) {
 			button.SetActive(false);
 		}
+	}
+
+	public void DisplayEndScreen(bool hasWon) {
+		return;
 	}
 }

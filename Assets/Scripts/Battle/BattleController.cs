@@ -212,10 +212,12 @@ public class BattleController : MonoBehaviour {
 
 	public IEnumerator PlayerAttack() {
 
-		battleUI.ClearUI();
+		battleUI.ClearUI(true);
 
 		// Enters BattleState for targeting
 		yield return StartCoroutine(Targeting());
+
+		battleUI.ClearUI(false);
 
 		int damage = rand.Next(player.battleEntity.minAttackDamage, player.battleEntity.maxAttackDamage + 1);
 		target.TakeDamage(damage);
@@ -236,12 +238,14 @@ public class BattleController : MonoBehaviour {
 
 	public IEnumerator PlayerSkill(int numSkill) {
 
-		battleUI.ClearUI();
+		battleUI.ClearUI(true);
 
 		Skill skill = player.battleEntity.skills[numSkill];
 
 		// Enters BattleState for targeting
 		yield return StartCoroutine(Targeting(skill));
+
+		battleUI.ClearUI(false);
 
 		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " used " + skill.name + " on " + target.battleEntity.name + "!");
 
@@ -293,6 +297,12 @@ public class BattleController : MonoBehaviour {
 
 		while (target == null) yield return new WaitForSecondsRealtime(0.25f);
 
+	}
+
+	public void CancelTarget() {
+		StopAllCoroutines();
+		EndTargetingAll();
+		PlayerTurn();
 	}
 
 	private void TargetAll(bool isPlayerTeam) {
@@ -365,8 +375,10 @@ public class BattleController : MonoBehaviour {
 
 		if (battleState == BattleState.WON) {
 			battleText.text = "You won!";
+			battleUI.DisplayEndScreen(true);
 		} else if (battleState == BattleState.LOST) {
 			battleText.text = "You lost...";
+			battleUI.DisplayEndScreen(false);
 		}
 	}
 
