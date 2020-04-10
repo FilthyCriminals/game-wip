@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 [CreateAssetMenu(fileName = "NewBattleEntity", menuName ="Battle Entity")]
 public class BattleEntity : ScriptableObject {
 	public new string name;
