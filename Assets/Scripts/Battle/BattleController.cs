@@ -19,10 +19,12 @@ public class BattleController : MonoBehaviour {
 	[SerializeField] private GameObject turnOrderTrackerObject;
 
 	public Text battleText;
-	public Transform turnOrderTracker;
-	public EnemyContainer enemyContainer;
+	public BattleUI battleUI;
+	private EnemyContainer enemyContainer;
 
 	public List<BattleEntityController> battleEntities = new List<BattleEntityController>();
+	public List<BattleEntityController> players = new List<BattleEntityController>();
+	public List<BattleEntityController> enemies = new List<BattleEntityController>();
 
 	private System.Random rand = new System.Random();
 
@@ -40,24 +42,18 @@ public class BattleController : MonoBehaviour {
 	private Coroutine typeText;
 
 	void Start() {
+
+		enemyContainer = GetComponent<EnemyContainer>();
+
 		// Spawn player and enemy
-		player = SpawnEntity(true, new Vector3(-3, 0));
-		battleEntities.Add(player);
-
-		int numEnemies = rand.Next(minNumEnemies, maxNumEnemies);
-
-		float startingPosition = (entitySpacing / 2) * (numEnemies - 1);
-		Debug.Log("Starting position: " + startingPosition);
-		for (int i = 0; i < numEnemies; i++) {
-			Debug.Log("Position: " + (startingPosition - i * entitySpacing));
-			battleEntities.Add(SpawnEntity(false, new Vector3(3, startingPosition - i* entitySpacing)));
-		}
+		SpawnPlayers();
+		SpawnEnemies();
 
 		// Randomize turn order
 		battleEntities = battleEntities.OrderBy(x => rand.Next()).ToList<BattleEntityController>();
 
 		foreach(BattleEntityController entityController in battleEntities) {
-			SetupTurnOrderTrackerForEntity(entityController);
+			battleUI.SetupTurnOrderTrackerForEntity(entityController);
 		}
 
 		battleState = BattleState.START;
@@ -65,15 +61,43 @@ public class BattleController : MonoBehaviour {
 		NextTurn();
 	}
 
-	private BattleEntityController SpawnEntity(bool isPlayerTeam, Vector3 position) {
-		BattleEntityController entityController;
+	private void SpawnPlayers() {
+		int numPlayers = 0;
+
+		foreach (BattleEntity _entity in CharacterManager.instance.battleEntities) {
+			if (_entity != null) numPlayers++;
+		}
+
 		BattleEntity entity;
 
-		if (isPlayerTeam) {
-			entity = Resources.Load("Chris") as BattleEntity;
-		} else {
-			entity = enemyContainer.enemies[rand.Next(enemyContainer.enemies.Length)];
+		float startingPosition = (entitySpacing / 2) * (numPlayers - 1);
+		for (int i = 0; i < numPlayers; i++) {
+			entity = CharacterManager.instance.battleEntities[i];
+
+			if (entity != null) {
+				BattleEntityController tmp = SpawnEntity(entity, new Vector3(-3, startingPosition - i * entitySpacing), true);
+				battleEntities.Add(tmp);
+				players.Add(tmp);
+			}
 		}
+	}
+
+	private void SpawnEnemies() {
+		int numEnemies = rand.Next(minNumEnemies, maxNumEnemies);
+		BattleEntity entity;
+
+		float startingPosition = (entitySpacing / 2) * (numEnemies - 1);
+		for (int i = 0; i < numEnemies; i++) {
+			entity = enemyContainer.enemies[rand.Next(enemyContainer.enemies.Length)];
+
+			BattleEntityController tmp = SpawnEntity(entity, new Vector3(3, startingPosition - i * entitySpacing), false);
+			battleEntities.Add(tmp);
+			enemies.Add(tmp);
+		}
+	}
+
+	private BattleEntityController SpawnEntity(BattleEntity entity, Vector3 position, bool isPlayerTeam) {
+		BattleEntityController entityController;
 
 		entityController = Instantiate(battleEntityPrefab, position, Quaternion.identity).GetComponent<BattleEntityController>();
 		entityController.battleEntity = entity;
@@ -83,14 +107,6 @@ public class BattleController : MonoBehaviour {
 		return entityController;
 	}
 
-	private void SetupTurnOrderTrackerForEntity(BattleEntityController battleEntity) {
-
-		TurnOrderTrackerObject trackerObject = Instantiate(turnOrderTrackerObject, turnOrderTracker).GetComponent<TurnOrderTrackerObject>();
-
-		trackerObject.Setup(battleEntity);
-
-		battleEntity.turnTracker = trackerObject;
-	}
 
 	// BattleState WAITING
 	private void NextTurn() {
@@ -133,6 +149,8 @@ public class BattleController : MonoBehaviour {
 		// Put setup logic for player turn here
 		// Such as changing the skills available for this character
 		// Or for determining status effects
+
+		battleUI.SetupUIForPlayer(player);
 
 		SetBattleText("Choose your action.");
 		battleState = BattleState.PLAYER_TURN;
@@ -194,8 +212,12 @@ public class BattleController : MonoBehaviour {
 
 	public IEnumerator PlayerAttack() {
 
+		battleUI.ClearUI(true);
+
 		// Enters BattleState for targeting
 		yield return StartCoroutine(Targeting());
+
+		battleUI.ClearUI(false);
 
 		int damage = rand.Next(player.battleEntity.minAttackDamage, player.battleEntity.maxAttackDamage + 1);
 		target.TakeDamage(damage);
@@ -216,10 +238,14 @@ public class BattleController : MonoBehaviour {
 
 	public IEnumerator PlayerSkill(int numSkill) {
 
+		battleUI.ClearUI(true);
+
 		Skill skill = player.battleEntity.skills[numSkill];
 
 		// Enters BattleState for targeting
 		yield return StartCoroutine(Targeting(skill));
+
+		battleUI.ClearUI(false);
 
 		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " used " + skill.name + " on " + target.battleEntity.name + "!");
 
@@ -273,6 +299,12 @@ public class BattleController : MonoBehaviour {
 
 	}
 
+	public void CancelTarget() {
+		StopAllCoroutines();
+		EndTargetingAll();
+		PlayerTurn();
+	}
+
 	private void TargetAll(bool isPlayerTeam) {
 		foreach (BattleEntityController entity in battleEntities) {
 			if (entity.isPlayerTeam == isPlayerTeam)
@@ -320,6 +352,8 @@ public class BattleController : MonoBehaviour {
 	private IEnumerator EnemyAttack() {
 		yield return new WaitForSeconds(1f);
 
+		BattleEntityController player = players[rand.Next(players.Count)];
+
 		int damage = rand.Next(enemy.battleEntity.minAttackDamage, enemy.battleEntity.maxAttackDamage + 1);
 		player.TakeDamage(damage);
 
@@ -341,8 +375,10 @@ public class BattleController : MonoBehaviour {
 
 		if (battleState == BattleState.WON) {
 			battleText.text = "You won!";
+			battleUI.DisplayEndScreen(true);
 		} else if (battleState == BattleState.LOST) {
 			battleText.text = "You lost...";
+			battleUI.DisplayEndScreen(false);
 		}
 	}
 
