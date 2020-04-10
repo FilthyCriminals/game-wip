@@ -19,8 +19,8 @@ public class BattleController : MonoBehaviour {
 	[SerializeField] private GameObject turnOrderTrackerObject;
 
 	public Text battleText;
-	public Transform turnOrderTracker;
-	public EnemyContainer enemyContainer;
+	public BattleUI battleUI;
+	private EnemyContainer enemyContainer;
 
 	public List<BattleEntityController> battleEntities = new List<BattleEntityController>();
 	public List<BattleEntityController> players = new List<BattleEntityController>();
@@ -53,7 +53,7 @@ public class BattleController : MonoBehaviour {
 		battleEntities = battleEntities.OrderBy(x => rand.Next()).ToList<BattleEntityController>();
 
 		foreach(BattleEntityController entityController in battleEntities) {
-			SetupTurnOrderTrackerForEntity(entityController);
+			battleUI.SetupTurnOrderTrackerForEntity(entityController);
 		}
 
 		battleState = BattleState.START;
@@ -74,7 +74,6 @@ public class BattleController : MonoBehaviour {
 		for (int i = 0; i < numPlayers; i++) {
 			entity = CharacterManager.instance.battleEntities[i];
 
-			Debug.Log(entity);
 			if (entity != null) {
 				BattleEntityController tmp = SpawnEntity(entity, new Vector3(-3, startingPosition - i * entitySpacing), true);
 				battleEntities.Add(tmp);
@@ -108,14 +107,6 @@ public class BattleController : MonoBehaviour {
 		return entityController;
 	}
 
-	private void SetupTurnOrderTrackerForEntity(BattleEntityController battleEntity) {
-
-		TurnOrderTrackerObject trackerObject = Instantiate(turnOrderTrackerObject, turnOrderTracker).GetComponent<TurnOrderTrackerObject>();
-
-		trackerObject.Setup(battleEntity);
-
-		battleEntity.turnTracker = trackerObject;
-	}
 
 	// BattleState WAITING
 	private void NextTurn() {
@@ -158,6 +149,8 @@ public class BattleController : MonoBehaviour {
 		// Put setup logic for player turn here
 		// Such as changing the skills available for this character
 		// Or for determining status effects
+
+		battleUI.SetupUIForPlayer(player);
 
 		SetBattleText("Choose your action.");
 		battleState = BattleState.PLAYER_TURN;
@@ -219,6 +212,8 @@ public class BattleController : MonoBehaviour {
 
 	public IEnumerator PlayerAttack() {
 
+		battleUI.ClearUI();
+
 		// Enters BattleState for targeting
 		yield return StartCoroutine(Targeting());
 
@@ -240,6 +235,8 @@ public class BattleController : MonoBehaviour {
 	}
 
 	public IEnumerator PlayerSkill(int numSkill) {
+
+		battleUI.ClearUI();
 
 		Skill skill = player.battleEntity.skills[numSkill];
 
@@ -345,7 +342,7 @@ public class BattleController : MonoBehaviour {
 	private IEnumerator EnemyAttack() {
 		yield return new WaitForSeconds(1f);
 
-		BattleEntityController player = players[rand.Next(players.Count + 1)];
+		BattleEntityController player = players[rand.Next(players.Count)];
 
 		int damage = rand.Next(enemy.battleEntity.minAttackDamage, enemy.battleEntity.maxAttackDamage + 1);
 		player.TakeDamage(damage);

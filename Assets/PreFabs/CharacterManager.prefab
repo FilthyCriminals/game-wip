@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battleEntities:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: dbdd0ac7d9ba4ae459fb62465a128c61, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
