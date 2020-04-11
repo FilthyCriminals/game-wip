@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minPower: 0
   maxPower: 0
-  name: 
+  name: Strength
   cost: 0
   status:
-    duration: 0
-    effect: 0
-  isSingleTarget: 0
-  isFriendly: 0
+    duration: 3
+    effect: 4
+  isSingleTarget: 1
+  isFriendly: 1
   damageMultiplier: 0.5

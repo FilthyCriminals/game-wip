@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 032c040a0f107fc478b5fedc331fcf7e, type: 3}
   m_Name: Heal
   m_EditorClassIdentifier: 
-  minPower: 0
-  maxPower: 0
-  name: 
+  minPower: 10
+  maxPower: 15
+  name: Heal
   cost: 0
-  duration: 0
-  statusEffect: 0
-  isSingleTarget: 0
-  isFriendly: 0
+  status:
+    duration: 0
+    effect: 0
+  isSingleTarget: 1
+  isFriendly: 1

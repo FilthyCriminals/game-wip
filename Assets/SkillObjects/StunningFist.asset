@@ -16,7 +16,8 @@ MonoBehaviour:
   maxPower: 15
   name: Stunning Fist
   cost: 0
-  duration: 1
-  statusEffect: 1
+  status:
+    duration: 1
+    effect: 1
   isSingleTarget: 1
   isFriendly: 0
