@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
 [CreateAssetMenu(fileName = "NewBattleEntity", menuName ="Battle Entity")]
 public class BattleEntity : ScriptableObject {
 	public new string name;
@@ -12,9 +11,6 @@ public class BattleEntity : ScriptableObject {
 
 	public int minAttackDamage = 5;
 	public int maxAttackDamage = 10;
-
-	public int minSkillDamage = 5;
-	public int maxSkillDamage = 10;
 
 	public Sprite sprite;
 

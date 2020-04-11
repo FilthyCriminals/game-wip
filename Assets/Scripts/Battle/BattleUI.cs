@@ -13,7 +13,7 @@ public class BattleUI : MonoBehaviour
 	public GameObject[] skillButtons;
 	public Text[] skillTexts;
 
-	private void Start() {
+	private void Awake() {
 		ClearUI(false);
 	}
 

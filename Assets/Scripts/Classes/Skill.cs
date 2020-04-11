@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public abstract class Skill : ScriptableObject {
@@ -7,8 +8,7 @@ public abstract class Skill : ScriptableObject {
 	[SerializeField] protected int maxPower;
 	[SerializeField] public new string name;
 	[SerializeField] protected int cost;
-	[SerializeField] protected int duration;
-	[SerializeField] public StatusEffect statusEffect;
+	[SerializeField] public Status status;
 	[SerializeField] public bool isSingleTarget;
 	[SerializeField] public bool isFriendly;
 
@@ -20,4 +20,12 @@ public enum StatusEffect {
 	STUN,
 	BURN,
 	POISON,
+	BUFF
+}
+
+[System.Serializable]
+public class Status {
+	public int duration;
+	public StatusEffect effect;
+	public Action<BattleEntityController> callback;
 }

@@ -13,11 +13,13 @@ public class BattleEntityController : MonoBehaviour {
 	public TurnOrderTrackerObject turnTracker;
 	public Image targetingImage;
 
-	public StatusEffect status;
-	public int statusDuration = 0;
+
+	public List<Status> statuses = new List<Status>();
 	public int maxHealth;
 	public bool isPlayerTeam = false;
 	public bool isTargeting = false;
+
+	public float damageMultiplier = 1f;
 
 	private System.Random rand = new System.Random();
 
@@ -35,13 +37,8 @@ public class BattleEntityController : MonoBehaviour {
 	}
 
 	public void TakeDamage(int damage) {
-		currentHealth -= damage;
 
-		if (currentHealth < 0) currentHealth = 0;
-
-		healthBar.SetHealth(currentHealth);
-		turnTracker.background.transform.localScale = new Vector3(turnTracker.background.transform.localScale.x, currentHealth / (float)maxHealth );
-
+		UpdateHealth(damage);
 
 		// Play hurt and death animation here
 		if (currentHealth == 0) {
@@ -51,17 +48,38 @@ public class BattleEntityController : MonoBehaviour {
 		}
 	}
 
+	public void RegainHealth(int heal) {
+		UpdateHealth(-heal);
+
+		// Play healed animation
+	}
+
+	private void UpdateHealth(int damage) {
+		currentHealth -= damage;
+
+		if (currentHealth < 0) currentHealth = 0;
+		if (currentHealth > maxHealth) currentHealth = maxHealth;
+
+		healthBar.SetHealth(currentHealth);
+		turnTracker.background.transform.localScale = new Vector3(turnTracker.background.transform.localScale.x, currentHealth / (float)maxHealth);
+	}
+
 	private void OnMouseUp() {
 		if (battleController.battleState != BattleState.TARGETING || !isTargeting) return;
 
 		battleController.OnEntitySelected(this);
 	}
 
-	public void SetStatusEffect(StatusEffect effect, int duration) {
+	public void SetStatusEffect(Status status) {
 		// Place any status effect interations here
 
-		status = effect;
-		statusDuration = duration;
+
+		statuses.Add(status);
+	}
+
+	public void RemoveStatusEffect(Status status) {
+		statuses.Remove(status);
+		status.callback(this);
 	}
 
 	public void OnTargeting() {
@@ -72,5 +90,35 @@ public class BattleEntityController : MonoBehaviour {
 	public void EndTargeting() {
 		isTargeting = false;
 		targetingImage.enabled = false;
+	}
+
+	// Returns whether or not it takes it's turn
+	public bool TickStatuses() {
+
+		bool shouldTakeTurn = true;
+
+		for (int i = 0; i < statuses.Count; i++) {
+			Status status = statuses[i];
+			status.duration -= 1;
+			if (status.effect == StatusEffect.STUN) {
+				shouldTakeTurn = false;
+			}
+		}
+
+		return shouldTakeTurn;
+	}
+
+	public void CleanUpStatuses() {
+		List<Status> statusesToRemove = new List<Status>();
+
+		for (int i = 0; i < statuses.Count; i++) {
+			Status status = statuses[i];
+
+			if (status.duration == 0) statusesToRemove.Add(status);
+		}
+
+		foreach(Status status in statusesToRemove) {
+			RemoveStatusEffect(status);
+		}
 	}
 }

@@ -100,6 +100,7 @@ public class BattleController : MonoBehaviour {
 		BattleEntityController entityController;
 
 		entityController = Instantiate(battleEntityPrefab, position, Quaternion.identity).GetComponent<BattleEntityController>();
+		entityController.gameObject.name = entity.name;
 		entityController.battleEntity = entity;
 		entityController.isPlayerTeam = isPlayerTeam;
 		entityController.battleController = this;
@@ -119,12 +120,8 @@ public class BattleController : MonoBehaviour {
 
 		currentEntity.turnTracker.SetActive(true);
 
-		// Skip this turn
-		if (currentEntity.status == StatusEffect.STUN) {
-			currentEntity.statusDuration -= 1;
-
-			if (currentEntity.statusDuration == 0) currentEntity.status = StatusEffect.NONE;
-
+		// TickStatuses returns whether to continue with turn
+		if(!currentEntity.TickStatuses()) {
 			StartCoroutine(NextTurnWithText(currentEntity.battleEntity.name + " is stunned!"));
 			return;
 		}
@@ -143,6 +140,10 @@ public class BattleController : MonoBehaviour {
 		yield return SetBattleText(text);
 		yield return new WaitForSeconds(1.5f);
 		NextTurn();
+	}
+
+	private void EndTurn(BattleEntityController battleEntityController) {
+		battleEntityController.CleanUpStatuses();
 	}
 
 	private void PlayerTurn() {
@@ -220,6 +221,7 @@ public class BattleController : MonoBehaviour {
 		battleUI.ClearUI(false);
 
 		int damage = rand.Next(player.battleEntity.minAttackDamage, player.battleEntity.maxAttackDamage + 1);
+		damage = (int)(damage * player.damageMultiplier);
 		target.TakeDamage(damage);
 
 		SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " took " + damage + " damage!");
@@ -232,6 +234,7 @@ public class BattleController : MonoBehaviour {
 			battleState = BattleState.WON;
 			EndBattle();
 		} else {
+			EndTurn(player);
 			NextTurn();
 		}
 	}
@@ -260,7 +263,7 @@ public class BattleController : MonoBehaviour {
 		int healthDiff = healthBefore - target.currentHealth;
 
 		if(healthDiff == 0)
-			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " was " + skill.statusEffect.ToString().ToLower() + "ed!");
+			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " was " + skill.status.effect.ToString().ToLower() + "ed!");
 		else if(healthDiff > 0)
 			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " took " + (healthBefore - target.currentHealth) + " damage from " + skill.name + "!");
 		else if(healthDiff < 0)
@@ -274,6 +277,7 @@ public class BattleController : MonoBehaviour {
 			battleState = BattleState.WON;
 			EndBattle();
 		} else {
+			EndTurn(player);
 			NextTurn();
 		}
 	}
@@ -365,6 +369,7 @@ public class BattleController : MonoBehaviour {
 			battleState = BattleState.LOST;
 			EndBattle();
 		} else {
+			EndTurn(enemy);
 			NextTurn();
 		}
 	}
