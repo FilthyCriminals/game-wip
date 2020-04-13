@@ -18,7 +18,6 @@ public class BattleController : MonoBehaviour {
 	[SerializeField] private Transform battleEntityPrefab;
 	[SerializeField] private GameObject turnOrderTrackerObject;
 
-	public Text battleText;
 	public BattleUI battleUI;
 	private EnemyContainer enemyContainer;
 
@@ -39,7 +38,6 @@ public class BattleController : MonoBehaviour {
 	private BattleEntityController enemy;
 	private BattleEntityController target;
 	private BattleEntityController currentEntity;
-	private Coroutine typeText;
 
 	void Start() {
 
@@ -57,7 +55,6 @@ public class BattleController : MonoBehaviour {
 		}
 
 		battleState = BattleState.START;
-		battleText.text = "Start!";
 		NextTurn();
 	}
 
@@ -137,7 +134,7 @@ public class BattleController : MonoBehaviour {
 	}
 
 	IEnumerator NextTurnWithText(string text) {
-		yield return SetBattleText(text);
+		SetBattleText(text);
 		yield return new WaitForSeconds(1.5f);
 		NextTurn();
 	}
@@ -153,27 +150,13 @@ public class BattleController : MonoBehaviour {
 
 		battleUI.SetupUIForPlayer(player);
 
-		SetBattleText("Choose your action.");
 		battleState = BattleState.PLAYER_TURN;
 	}
 
-	private Coroutine SetBattleText(string text) {
-		if (typeText != null) {
-			StopCoroutine(typeText);
-			typeText = null;
-		}
+	private void SetBattleText(string text) {
 
-		battleText.text = "";
-		typeText = StartCoroutine(TypeText(text));
-		return typeText;
-	}
-
-	IEnumerator TypeText(string text) {
-		foreach (char character in text.ToCharArray()) {
-			battleText.text += character;
-			yield return null;
-			yield return null;
-		}
+		battleUI.LogUpdate("\n");
+		battleUI.LogUpdate(text);
 	}
 
 	public void OnAttackButton() {
@@ -224,7 +207,7 @@ public class BattleController : MonoBehaviour {
 		damage = (int)(damage * player.damageMultiplier);
 		target.TakeDamage(damage);
 
-		SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " took " + damage + " damage!");
+		SetBattleText(target.battleEntity.name + " took " + damage + " damage!");
 
 		target = null;
 
@@ -250,7 +233,7 @@ public class BattleController : MonoBehaviour {
 
 		battleUI.ClearUI(false);
 
-		SetBattleText("Turn " + roundCounter + " " + player.battleEntity.name + " used " + skill.name + " on " + target.battleEntity.name + "!");
+		SetBattleText(player.battleEntity.name + " used " + skill.name + " on " + target.battleEntity.name + "!");
 
 		int healthBefore = target.currentHealth;
 
@@ -263,11 +246,11 @@ public class BattleController : MonoBehaviour {
 		int healthDiff = healthBefore - target.currentHealth;
 
 		if(healthDiff == 0)
-			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " was " + skill.status.effect.ToString().ToLower() + "ed!");
+			SetBattleText(target.battleEntity.name + " was " + skill.status.effect.ToString().ToLower() + "ed!");
 		else if(healthDiff > 0)
-			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " took " + (healthBefore - target.currentHealth) + " damage from " + skill.name + "!");
+			SetBattleText(target.battleEntity.name + " took " + (healthBefore - target.currentHealth) + " damage from " + skill.name + "!");
 		else if(healthDiff < 0)
-			SetBattleText("Turn " + roundCounter + " " + target.battleEntity.name + " healed for " + (target.currentHealth - healthBefore) + " health!");
+			SetBattleText(target.battleEntity.name + " healed for " + (target.currentHealth - healthBefore) + " health!");
 
 		target = null;
 
@@ -284,7 +267,6 @@ public class BattleController : MonoBehaviour {
 
 	private IEnumerator Targeting(Skill skill) {
 		battleState = BattleState.TARGETING;
-		SetBattleText("Select a target");
 
 		TargetAll(skill.isFriendly);
 
@@ -295,7 +277,6 @@ public class BattleController : MonoBehaviour {
 	// Targeting for attack
 	private IEnumerator Targeting() {
 		battleState = BattleState.TARGETING;
-		SetBattleText("Select a target");
 
 		TargetAll(false);
 
@@ -361,7 +342,7 @@ public class BattleController : MonoBehaviour {
 		int damage = rand.Next(enemy.battleEntity.minAttackDamage, enemy.battleEntity.maxAttackDamage + 1);
 		player.TakeDamage(damage);
 
-		SetBattleText("Turn " + roundCounter + " " + enemy.battleEntity.name + " did: " + damage + " damage with attack!");
+		SetBattleText(enemy.battleEntity.name + " attacked " + player.battleEntity.name + " for " + damage + " damage!");
 
 		yield return new WaitForSeconds(2f);
 
@@ -379,10 +360,10 @@ public class BattleController : MonoBehaviour {
 		currentEntity.turnTracker.SetActive(false);
 
 		if (battleState == BattleState.WON) {
-			battleText.text = "You won!";
+			SetBattleText("You won!");
 			battleUI.DisplayEndScreen(true);
 		} else if (battleState == BattleState.LOST) {
-			battleText.text = "You lost...";
+			SetBattleText("You lost...");
 			battleUI.DisplayEndScreen(false);
 		}
 	}

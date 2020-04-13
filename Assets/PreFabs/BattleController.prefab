@@ -48,7 +48,6 @@ MonoBehaviour:
     type: 3}
   turnOrderTrackerObject: {fileID: 3033050670196034490, guid: 0efc197029d77d9408b93cb0d9d50ecd,
     type: 3}
-  battleText: {fileID: 0}
   battleUI: {fileID: 0}
   battleEntities: []
   players: []
