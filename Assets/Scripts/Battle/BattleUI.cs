@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class BattleUI : MonoBehaviour
@@ -8,12 +9,15 @@ public class BattleUI : MonoBehaviour
 
 	public TurnOrderTrackerObject turnOrderTrackerObject;
 
+	public Text battleText;
+	public ScrollRect scrollRect;
 	public GameObject cancelTargetingButton;
 	public GameObject attackButton;
 	public GameObject[] skillButtons;
 	public Text[] skillTexts;
 
-	private void Start() {
+	private void Awake() {
+		battleText.text = "Battle start.";
 		ClearUI(false);
 	}
 
@@ -53,5 +57,16 @@ public class BattleUI : MonoBehaviour
 
 	public void DisplayEndScreen(bool hasWon) {
 		return;
+	}
+
+	public void LogUpdate(string text) {
+		battleText.text += text;
+		StartCoroutine(UpdateScrollPosition());
+	}
+
+
+	IEnumerator UpdateScrollPosition() {
+		yield return new WaitForEndOfFrame();
+		scrollRect.verticalNormalizedPosition = 0f;
 	}
 }

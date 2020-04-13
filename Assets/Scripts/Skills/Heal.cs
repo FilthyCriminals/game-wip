@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "StunningFist", menuName = "Skill/StunningFist")]
-public class StunningFist : Skill {
+[CreateAssetMenu(fileName = "Heal", menuName = "Skill/Heal")]
+public class Heal : Skill {
 
 	private System.Random rand = new System.Random();
 
@@ -14,9 +14,8 @@ public class StunningFist : Skill {
 
 		yield return new WaitForSeconds(1.5f);
 
-		int damage = rand.Next(this.minPower, this.maxPower + 1);
+		int heal = rand.Next(this.minPower, this.maxPower + 1);
 
-		target.TakeDamage(damage);
-		target.SetStatusEffect(this.status);
+		target.RegainHealth(heal);
 	}
 }

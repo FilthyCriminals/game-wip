@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d487237893abfc64993512cb9ea7cd9f, type: 3}
-  m_Name: StunningFist
+  m_Script: {fileID: 11500000, guid: 032c040a0f107fc478b5fedc331fcf7e, type: 3}
+  m_Name: Heal
   m_EditorClassIdentifier: 
   minPower: 10
   maxPower: 15
-  name: Stunning Fist
+  name: Heal
   cost: 0
   status:
-    duration: 1
-    effect: 1
+    duration: 0
+    effect: 0
   isSingleTarget: 1
-  isFriendly: 0
+  isFriendly: 1
