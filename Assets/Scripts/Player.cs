@@ -11,6 +11,8 @@ public class Player : MonoBehaviour {
 	public float moveSpeed = 5f;
 	public Rigidbody2D rb;
 	public Animator animator;
+
+	[HideInInspector]
 	public Interactable closestInteractable;
 
 	private void Awake() {
@@ -32,14 +34,12 @@ public class Player : MonoBehaviour {
 		animator.SetFloat("Vertical", movementInput.y);
 		animator.SetFloat("Speed", movementInput.sqrMagnitude);
 
-		if(Input.GetKey(KeyCode.Space) && closestInteractable != null) {
+		if(Input.GetKey(KeyCode.Space) && closestInteractable != null && !closestInteractable.hasInteracted && closestInteractable.canInteract) {
 			closestInteractable.Interact();
 		}
 	}
 
 	private void FixedUpdate() {
-		Debug.Log(movementInput);
-
 		rb.MovePosition(rb.position + movementInput * moveSpeed * Time.fixedDeltaTime);
 	}
 }

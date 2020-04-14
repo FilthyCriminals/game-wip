@@ -2,11 +2,13 @@
 
 public class Interactable : MonoBehaviour {
 
-	public float radius = 2f;
+	public float radius = 0.5f;
 
 	private Player player;
 
+	[HideInInspector]
 	public bool canInteract = false;
+	public bool hasInteracted = false;
 
 	private void Start() {
 		player = Player.instance;
@@ -29,6 +31,9 @@ public class Interactable : MonoBehaviour {
 	}
 
 	public virtual void Interact() {
+		if (hasInteracted) return;
+
+		hasInteracted = true;
 		Debug.Log("Interacting with " + gameObject.name);
 	}
 
