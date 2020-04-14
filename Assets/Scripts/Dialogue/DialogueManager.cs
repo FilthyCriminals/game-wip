@@ -5,25 +5,48 @@ using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
 {
+
+	public static DialogueManager instance;
+
 	private Queue<string> sentences;
 
 	public Text dialogueText;
 	public Text nameText;
+	public GameObject dialogueContainer;
+	public Interactable interactable;
 
 	public Animator dialogueBoxAnimator;
 	public Animator dialogueCharacterAnimator;
+
+	private void Awake() {
+		if(instance != null) {
+			Debug.LogWarning("More than one DialogueManager");
+			Destroy(gameObject);
+			return;
+		}
+
+		if (dialogueContainer != null) dialogueContainer.SetActive(false);
+
+		instance = this;
+	}
 
 	void Start() {
 		sentences = new Queue<string>();
 
 		dialogueText.text = "";
+
 		nameText.text = "";
 	}
 
 	public IEnumerator StartDialogue(Dialogue dialogue) {
 
-		dialogueBoxAnimator.SetBool("IsOpen", true);
-		dialogueCharacterAnimator.SetBool("IsOpen", true);
+		if (dialogueContainer != null) dialogueContainer.SetActive(true);
+
+		if(dialogueBoxAnimator != null)
+			dialogueBoxAnimator.SetBool("IsOpen", true);
+
+		if(dialogueCharacterAnimator != null)
+			dialogueCharacterAnimator.SetBool("IsOpen", true);
 
 		nameText.text = dialogue.name;
 		dialogueText.text = "";
@@ -63,7 +86,14 @@ public class DialogueManager : MonoBehaviour
 	}
 
 	void EndDialogue() {
-		dialogueBoxAnimator.SetBool("IsOpen", false);
-		dialogueCharacterAnimator.SetBool("IsOpen", false);
+		if (dialogueContainer != null) dialogueContainer.SetActive(false);
+
+		if (interactable != null) interactable.hasInteracted = false;
+
+		if(dialogueBoxAnimator != null)
+			dialogueBoxAnimator.SetBool("IsOpen", false);
+
+		if(dialogueCharacterAnimator != null)
+			dialogueCharacterAnimator.SetBool("IsOpen", false);
 	}
 }

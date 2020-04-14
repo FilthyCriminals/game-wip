@@ -45,5 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueText: {fileID: 0}
   nameText: {fileID: 0}
+  dialogueContainer: {fileID: 0}
+  interactable: {fileID: 0}
   dialogueBoxAnimator: {fileID: 0}
   dialogueCharacterAnimator: {fileID: 0}
