@@ -16,16 +16,18 @@ public class SceneController : MonoBehaviour
 		}
 
 		instance = this;
+
+		DontDestroyOnLoad(gameObject);
 	}
 
 	public void LoadBattleScene(string sceneToLoad) {
-		mainCamera.enabled = false;
+		mainCamera.gameObject.SetActive(false);
 		currentBattleScene = sceneToLoad;
 		SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Additive);
 	}
 
 	public void UnloadBattleScene() {
 		SceneManager.UnloadSceneAsync(currentBattleScene);
-		mainCamera.enabled = true;
+		mainCamera.gameObject.SetActive(true);
 	}
 }

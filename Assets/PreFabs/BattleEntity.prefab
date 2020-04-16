@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1569542291790544125}
   - component: {fileID: 7272050820377755616}
   - component: {fileID: 7294688672693321660}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3298737454142720191}
   - component: {fileID: 1588660701710547988}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: New Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171,7 +171,7 @@ GameObject:
   - component: {fileID: 3330943857596491091}
   - component: {fileID: 4120004149016625153}
   - component: {fileID: 4504461163975053678}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -270,7 +270,7 @@ GameObject:
   - component: {fileID: 4064098010397200165}
   - component: {fileID: 9027279393386599150}
   - component: {fileID: 4768342405536763233}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BattleEntity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -312,10 +312,11 @@ MonoBehaviour:
   spriteRenderer: {fileID: 1588660701710547988}
   turnTracker: {fileID: 0}
   targetingImage: {fileID: 7459016747718994825}
-  status: 0
-  statusDuration: 0
+  statuses: []
+  maxHealth: 0
   isPlayerTeam: 0
   isTargeting: 0
+  damageMultiplier: 1
 --- !u!61 &4768342405536763233
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -353,7 +354,7 @@ GameObject:
   - component: {fileID: 1766827839774746533}
   - component: {fileID: 4977882472235105048}
   - component: {fileID: 7459016747718994825}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Targeting
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -426,7 +427,7 @@ GameObject:
   - component: {fileID: 1267188582565430353}
   - component: {fileID: 6283896545457292884}
   - component: {fileID: 7730690641028002777}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -499,7 +500,7 @@ GameObject:
   - component: {fileID: 1899158045758129642}
   - component: {fileID: 8603365916182837658}
   - component: {fileID: 9118433668994838530}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -633,7 +634,7 @@ GameObject:
   - component: {fileID: 3973564252164144889}
   - component: {fileID: 5835055493412080819}
   - component: {fileID: 6434909251185022712}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
