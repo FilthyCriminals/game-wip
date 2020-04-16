@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27826b1dc6e1aab4aaf0e8016b8a8dc9, type: 3}
+  m_Name: Strength
+  m_EditorClassIdentifier: 
+  minPower: 0
+  maxPower: 0
+  name: Strength
+  cost: 0
+  status:
+    duration: 3
+    effect: 4
+  isSingleTarget: 1
+  isFriendly: 1
+  damageMultiplier: 0.5

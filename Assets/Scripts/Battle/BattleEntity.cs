@@ -9,13 +9,10 @@ public class BattleEntity : ScriptableObject {
 	public int minHealth = 10;
 	public int maxHealth = 10;
 
-	public bool isPlayerTeam;
-
 	public int minAttackDamage = 5;
 	public int maxAttackDamage = 10;
 
-	public int minSkillDamage = 5;
-	public int maxSkillDamage = 10;
-
 	public Sprite sprite;
+
+	public List<Skill> skills;
 }

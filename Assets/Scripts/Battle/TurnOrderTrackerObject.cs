@@ -9,10 +9,10 @@ public class TurnOrderTrackerObject : MonoBehaviour
 	public Image background;
 	public Image activeBorder;
 
-	public void Setup(BattleEntity entity) {
-		characterSprite.sprite = entity.sprite;
+	public void Setup(BattleEntityController entityController) {
+		characterSprite.sprite = entityController.battleEntity.sprite;
 
-		background.color = entity.isPlayerTeam ? Color.green : Color.red;
+		background.color = entityController.isPlayerTeam ? Color.green : Color.red;
 	}
 
 	public void SetActive(bool isActive) {

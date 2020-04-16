@@ -1,10 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-
-[System.Serializable]
-public class SOB : Skill //this is inherited even if it doesnt show it
+﻿[System.Serializable]
+public class SOB //this is inherited even if it doesnt show it
 {
 
     public short HP { get => HP; set => HP = value; }
@@ -20,15 +15,9 @@ public class SOB : Skill //this is inherited even if it doesnt show it
     public char Gender { get => Gender; set => Gender = value; }
    // public string Name { get => Name; set => Name = value; } 
 
-
-
-
     public SOB()
     {
 
 
     }
-
-
-
 }

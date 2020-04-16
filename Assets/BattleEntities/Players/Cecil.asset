@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b754e6c3032a92b45861d4cc7a72fe51, type: 3}
+  m_Name: Cecil
+  m_EditorClassIdentifier: 
+  name: Cecil
+  minHealth: 50
+  maxHealth: 50
+  minAttackDamage: 5
+  maxAttackDamage: 10
+  sprite: {fileID: -3281672280745439332, guid: 930773210967aca4ebbf58cedc40a9e0, type: 3}
+  skills:
+  - {fileID: 11400000, guid: e69325cf3fef1544fb762fcb7402a151, type: 2}
+  - {fileID: 11400000, guid: 38e11764deda4464280dc4311f48fe80, type: 2}
