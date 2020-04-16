@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class InteractDialogue : Interactable
 {
 
 	public Dialogue dialogue;
+	public string battleSceneToLoad;
 
 	public override void Interact() {
 		base.Interact();

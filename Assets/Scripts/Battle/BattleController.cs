@@ -366,6 +366,8 @@ public class BattleController : MonoBehaviour {
 			SetBattleText("You lost...");
 			battleUI.DisplayEndScreen(false);
 		}
+
+		SceneController.instance.UnloadBattleScene();
 	}
 
 	public void OnEntitySelected(BattleEntityController entityController) {
