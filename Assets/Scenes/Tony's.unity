@@ -1102,6 +1102,7 @@ MonoBehaviour:
     sentences:
     - Oh! Hello...
     - We are still under development, you shouldn't be here.
+  battleSceneToLoad: Battle
 --- !u!212 &1661258258
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1741,3 +1742,77 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1437e6722ef2bef478ffa289d0026cb9, type: 3}
+--- !u!1001 &8519302919144874693
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2691277188388449641, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e,
+        type: 3}
+      propertyPath: mainCamera
+      value: 
+      objectReference: {fileID: 534633894}
+    - target: {fileID: 8519302919140323280, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 580.08795
+      objectReference: {fileID: 0}
+    - target: {fileID: 8519302919140323280, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 288.93262
+      objectReference: {fileID: 0}
+    - target: {fileID: 8519302919140323280, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -153.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8519302919140323280, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8519302919140323280, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8519302919140323280, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8519302919140323280, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8519302919140323280, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8519302919140323280, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8519302919140323280, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8519302919140323280, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8519302919140323281, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e,
+        type: 3}
+      propertyPath: m_Name
+      value: SceneManager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8b5d2b4a88acfdf49a3dcfb2b4e2b11e, type: 3}

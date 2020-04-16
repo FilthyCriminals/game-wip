@@ -13,7 +13,10 @@ public class DialogueManager : MonoBehaviour
 	public Text dialogueText;
 	public Text nameText;
 	public GameObject dialogueContainer;
-	public Interactable interactable;
+
+	private SceneController sceneController;
+
+	[HideInInspector] public InteractDialogue interactable;
 
 	public Animator dialogueBoxAnimator;
 	public Animator dialogueCharacterAnimator;
@@ -36,6 +39,8 @@ public class DialogueManager : MonoBehaviour
 		dialogueText.text = "";
 
 		nameText.text = "";
+
+		sceneController = SceneController.instance;
 	}
 
 	public IEnumerator StartDialogue(Dialogue dialogue) {
@@ -95,5 +100,9 @@ public class DialogueManager : MonoBehaviour
 
 		if(dialogueCharacterAnimator != null)
 			dialogueCharacterAnimator.SetBool("IsOpen", false);
+
+		if (interactable != null && interactable.battleSceneToLoad != null) {
+			sceneController.LoadBattleScene(interactable.battleSceneToLoad);
+		}
 	}
 }
