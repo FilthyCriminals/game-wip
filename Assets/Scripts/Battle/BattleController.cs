@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 public enum BattleState {
@@ -19,17 +20,17 @@ public class BattleController : MonoBehaviour {
 	[SerializeField] private GameObject turnOrderTrackerObject;
 
 	public BattleUI battleUI;
+	public Tilemap tilemap;
 	private EnemyContainer enemyContainer;
 
-	public List<BattleEntityController> battleEntities = new List<BattleEntityController>();
-	public List<BattleEntityController> players = new List<BattleEntityController>();
-	public List<BattleEntityController> enemies = new List<BattleEntityController>();
+	[HideInInspector] public List<BattleEntityController> battleEntities = new List<BattleEntityController>();
+	[HideInInspector] public List<BattleEntityController> players = new List<BattleEntityController>();
+	[HideInInspector] public List<BattleEntityController> enemies = new List<BattleEntityController>();
 
 	private System.Random rand = new System.Random();
 
 	public int minNumEnemies = 1;
-	public int maxNumEnemies = 5;
-	public float entitySpacing = 2.5f;
+	public int maxNumEnemies = 4;
 
 	private int turnOrderIndex = 0;
 	private int roundCounter = 0;
@@ -59,6 +60,8 @@ public class BattleController : MonoBehaviour {
 	}
 
 	private void SpawnPlayers() {
+		int position = 0;
+		int sign = -1;
 		int numPlayers = 0;
 
 		foreach (BattleEntity _entity in CharacterManager.instance.battleEntities) {
@@ -67,12 +70,14 @@ public class BattleController : MonoBehaviour {
 
 		BattleEntity entity;
 
-		float startingPosition = (entitySpacing / 2) * (numPlayers - 1);
 		for (int i = 0; i < numPlayers; i++) {
 			entity = CharacterManager.instance.battleEntities[i];
 
 			if (entity != null) {
-				BattleEntityController tmp = SpawnEntity(entity, new Vector3(-3, startingPosition - i * entitySpacing), true);
+				position -= i * sign;
+				sign = -sign;
+
+				BattleEntityController tmp = SpawnEntity(entity, tilemap.GetCellCenterWorld(new Vector3Int(-2, position, 0)), true);
 				battleEntities.Add(tmp);
 				players.Add(tmp);
 			}
@@ -80,14 +85,18 @@ public class BattleController : MonoBehaviour {
 	}
 
 	private void SpawnEnemies() {
-		int numEnemies = rand.Next(minNumEnemies, maxNumEnemies);
+		int position = 0;
+		int sign = -1;
+		int numEnemies = rand.Next(minNumEnemies, maxNumEnemies + 1);
 		BattleEntity entity;
 
-		float startingPosition = (entitySpacing / 2) * (numEnemies - 1);
 		for (int i = 0; i < numEnemies; i++) {
 			entity = enemyContainer.enemies[rand.Next(enemyContainer.enemies.Length)];
 
-			BattleEntityController tmp = SpawnEntity(entity, new Vector3(3, startingPosition - i * entitySpacing), false);
+			position -= i * sign;
+			sign = -sign;
+
+			BattleEntityController tmp = SpawnEntity(entity, tilemap.GetCellCenterWorld(new Vector3Int(1, position, 0)), false);
 			battleEntities.Add(tmp);
 			enemies.Add(tmp);
 		}
@@ -147,6 +156,8 @@ public class BattleController : MonoBehaviour {
 		// Put setup logic for player turn here
 		// Such as changing the skills available for this character
 		// Or for determining status effects
+
+		Debug.Log("Player " + player.battleEntity.name + "'s turn.");
 
 		battleUI.SetupUIForPlayer(player);
 
@@ -330,6 +341,8 @@ public class BattleController : MonoBehaviour {
 	private void EnemyTurn() {
 		if (battleState != BattleState.ENEMY_TURN) return;
 		battleState = BattleState.WAITING;
+
+		Debug.Log("Enemy " + enemy.name + "'s turn.");
 
 		StartCoroutine(EnemyAttack());
 	}
