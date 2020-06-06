@@ -49,12 +49,12 @@ MonoBehaviour:
   turnOrderTrackerObject: {fileID: 3033050670196034490, guid: 0efc197029d77d9408b93cb0d9d50ecd,
     type: 3}
   battleUI: {fileID: 0}
+  tilemap: {fileID: 0}
   battleEntities: []
   players: []
   enemies: []
   minNumEnemies: 1
-  maxNumEnemies: 5
-  entitySpacing: 2.5
+  maxNumEnemies: 4
   battleState: 0
 --- !u!114 &6951944313390756792
 MonoBehaviour:
