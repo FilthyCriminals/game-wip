@@ -10,6 +10,7 @@ public class Fireball : Skill {
 
 		yield return new WaitForSeconds(1.5f);
 
+        //Random.Next- Min is inclusive, max is non-inclusive
 		int damage = rand.Next(this.minPower, this.maxPower + 1);
 
 		foreach(BattleEntityController target in targets) {

@@ -785,6 +785,16 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1899251184332320518, guid: dc7c24fdfa3920945ac4da977dec4aa8,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 190
+      objectReference: {fileID: 0}
+    - target: {fileID: 1899251184332320518, guid: dc7c24fdfa3920945ac4da977dec4aa8,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 70
+      objectReference: {fileID: 0}
     - target: {fileID: 1971247839654063401, guid: dc7c24fdfa3920945ac4da977dec4aa8,
         type: 3}
       propertyPath: m_Layer
@@ -1098,7 +1108,12 @@ PrefabInstance:
     - target: {fileID: 5349341867934683730, guid: dc7c24fdfa3920945ac4da977dec4aa8,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 2.5300953
+      value: 2.5301607
+      objectReference: {fileID: 0}
+    - target: {fileID: 5349341867934683730, guid: dc7c24fdfa3920945ac4da977dec4aa8,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.000045776367
       objectReference: {fileID: 0}
     - target: {fileID: 5452569974007621084, guid: dc7c24fdfa3920945ac4da977dec4aa8,
         type: 3}
@@ -1303,6 +1318,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 589470649257272066, guid: a47a7a73c3c41c14d92485ec249e9ca1,
+        type: 3}
+      propertyPath: battleEntities.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 09ae4466ab2b9b8429fa9ea310810314,
+        type: 2}
     - target: {fileID: 5316689012924833172, guid: a47a7a73c3c41c14d92485ec249e9ca1,
         type: 3}
       propertyPath: m_Name
